@@ -7,16 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  # --- Setup Common ---
-  # Note: Each job manages its own setup to maximize parallelism
 
-  # --- Aeryion Backend ---
   aeryion-backend-lint:
     name: Aeryion Backend — Lint
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || contains(join(github.event.pull_request.base.repo.name, ','), 'aeryion/') || contains(join(github.event.pull_request.base.repo.name, ','), 'shared/') || true
-    # Simplification: Running all checks on PR for now to ensure total health,
-    # can restore granular path filtering once the base pipeline is stable.
     defaults:
       run:
         working-directory: aeryion/backend
@@ -60,7 +55,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest tests/ -v --tb=short
 
-  # --- Aeryion Dashboard ---
   aeryion-dashboard-lint:
     name: Aeryion Dashboard — Lint
     runs-on: ubuntu-latest
@@ -91,7 +85,6 @@ jobs:
       - run: pnpm install
       - run: pnpm --filter aeryion-dashboard type-check
 
-  # --- Coltiva Backend ---
   coltiva-backend-lint:
     name: Coltiva Backend — Lint
     runs-on: ubuntu-latest
@@ -138,7 +131,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest tests/ -v --tb=short
 
-  # --- LinkTrade Backend ---
   linktrade-backend-lint:
     name: LinkTrade Backend — Lint
     runs-on: ubuntu-latest
@@ -185,7 +177,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest tests/ -v --tb=short
 
-  # --- LinkTrade Web ---
   linktrade-web-lint:
     name: LinkTrade Web — Lint
     runs-on: ubuntu-latest
@@ -216,7 +207,6 @@ jobs:
       - run: pnpm install
       - run: pnpm --filter linktrade-web type-check
 
-  # --- Shared Library ---
   shared-lint:
     name: Shared — Lint
     runs-on: ubuntu-latest
@@ -263,9 +253,8 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest tests/ -v --tb=short
 
-  # --- Conclusion Gate ---
   ci-success:
-    name: "🚀 CI / All Checks Passed"
+    name: "CI / All Checks Passed"
     if: always()
     needs:
       - aeryion-backend-lint

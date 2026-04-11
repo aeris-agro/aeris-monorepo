@@ -1,0 +1,21 @@
+{
+  "name": "aeris-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AERIS Group — Integrated Agricultural Intelligence Infrastructure",
+  "packageManager": "pnpm@10.26.1",
+  "scripts": {
+    "dev:linktrade": "pnpm --filter linktrade-web dev",
+    "dev:dashboard": "pnpm --filter aeryion-dashboard dev",
+    "build:linktrade": "pnpm --filter linktrade-web build",
+    "build:dashboard": "pnpm --filter aeryion-dashboard build",
+    "lint:linktrade": "pnpm --filter linktrade-web lint",
+    "lint:dashboard": "pnpm --filter aeryion-dashboard lint",
+    "lint:all": "pnpm -r lint",
+    "dev:all": "pnpm -r --parallel dev"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

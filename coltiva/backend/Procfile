@@ -1,0 +1,3 @@
+web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+sms_consumer: python workers/sms_alert_consumer.py
+pest_detector: python workers/pest_outbreak_detector.py

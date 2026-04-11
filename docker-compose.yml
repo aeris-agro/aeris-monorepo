@@ -1,0 +1,123 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: aeris-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aeris
+      POSTGRES_PASSWORD: aeris_local_dev
+      POSTGRES_DB: aeris_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aeris -d aeris_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: aeris-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  aeryion-api:
+    build:
+      context: ./aeryion/backend
+      dockerfile: Dockerfile
+    container_name: aeris-aeryion-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./aeryion/backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./aeryion/backend:/app
+
+  coltiva-api:
+    build:
+      context: ./coltiva/backend
+      dockerfile: Dockerfile
+    container_name: aeris-coltiva-api
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./coltiva/backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./coltiva/backend:/app
+
+  linktrade-api:
+    build:
+      context: ./linktrade/backend
+      dockerfile: Dockerfile
+    container_name: aeris-linktrade-api
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./linktrade/backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./linktrade/backend:/app
+
+  linktrade-web:
+    build:
+      context: ./linktrade/web
+      dockerfile: Dockerfile
+    container_name: aeris-linktrade-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_LINKTRADE_API_URL=http://linktrade-api:8002
+    env_file:
+      - ./linktrade/web/.env
+    depends_on:
+      - linktrade-api
+    volumes:
+      - ./linktrade/web:/app
+      - /app/node_modules
+      - /app/.next
+
+  aeryion-dashboard:
+    build:
+      context: ./aeryion/dashboard
+      dockerfile: Dockerfile
+    container_name: aeris-aeryion-dashboard
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NEXT_PUBLIC_AERYION_API_URL=http://aeryion-api:8000
+    env_file:
+      - ./aeryion/dashboard/.env
+    depends_on:
+      - aeryion-api
+    volumes:
+      - ./aeryion/dashboard:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  postgres_data:
+  redis_data:

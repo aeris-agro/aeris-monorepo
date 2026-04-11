@@ -1,0 +1,7 @@
+packages:
+  - linktrade/web
+  - aeryion/dashboard
+
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver

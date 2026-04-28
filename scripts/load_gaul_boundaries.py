@@ -9,13 +9,17 @@ Usage:
     python3 scripts/load_gaul_boundaries.py
 """
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import ee
 import json
 from supabase import create_client
 
 # ── Config ────────────────────────────────────────────────────────────────────
-SUPABASE_URL = "https://ldajcrobrzskpzsupjeu.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkYWpjcm9icnpza3B6c3VwamV1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDk4Nzk4NCwiZXhwIjoyMDkwNTYzOTg0fQ.a8mHdSg5pozO4dfKOO_GEbCvHN9mXAmCme-wlsAknq4"
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 GEE_PROJECT  = "aeryion"
 
 TARGET_DISTRICTS = ["Lira", "Alebtong", "Dokolo"]

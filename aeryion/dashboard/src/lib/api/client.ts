@@ -1,84 +1,54 @@
-const API_BASE = "/api/v1";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
-type RequestOptions = {
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: unknown;
-  headers?: Record<string, string>;
-  signal?: AbortSignal;
-};
-
-async function request<T>(
-  endpoint: string,
-  options: RequestOptions = {}
-): Promise<T> {
-  const { method = "GET", body, headers = {}, signal } = options;
-
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-    signal,
-  });
-
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, error.detail ?? res.statusText);
-  }
-
+async function request<T>(endpoint: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(`${API_BASE}${endpoint}`, { signal });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
 
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    message: string
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
+export const api = {
+  health:        ()  => request<{ status: string }>("/health"),
+  ndviLatest:    ()  => request<NdviReading[]>("/v1/ndvi/latest"),
+  rainfallCurrent: () => request<RainfallReading[]>("/v1/rainfall/current"),
+  alertsActive:  ()  => request<Alert[]>("/v1/alerts/active"),
+  forecast7day:  (sub_county: string) =>
+    request<ForecastDay[]>(`/v1/forecast/7day?sub_county=${sub_county}`),
+};
+
+export interface NdviReading {
+  sub_county: string;
+  observed_date: string;
+  ndvi_mean: number;
+  ndvi_min: number;
+  ndvi_max: number;
+  red_edge_mean: number;
+  vegetation_status: string;
+  data_source: string;
 }
 
-export const weatherApi = {
-  getForecast: (lat: number, lng: number) =>
-    request(`/forecast?lat=${lat}&lng=${lng}`),
-  getRainfall: (stationId: string, params?: URLSearchParams) =>
-    request(`/rainfall/${stationId}${params ? `?${params}` : ""}`),
-};
+export interface RainfallReading {
+  sub_county: string;
+  observation_date: string;
+  period_days: number;
+  rainfall_mm: number;
+  anomaly_pct: number;
+  drought_flag: boolean;
+  flood_flag: boolean;
+}
 
-export const ndviApi = {
-  getCurrent: (regionId: string) => request(`/ndvi/${regionId}`),
-  getTimeSeries: (regionId: string, params?: URLSearchParams) =>
-    request(`/ndvi/${regionId}/timeseries${params ? `?${params}` : ""}`),
-};
+export interface Alert {
+  id: string;
+  severity: string;
+  category: string;
+  title: string;
+  district: string;
+  sub_county: string;
+  timestamp: string;
+  acknowledged: boolean;
+}
 
-export const soilApi = {
-  getMoisture: (lat: number, lng: number) =>
-    request(`/soil/moisture?lat=${lat}&lng=${lng}`),
-  getNutrients: (lat: number, lng: number) =>
-    request(`/soil/nutrients?lat=${lat}&lng=${lng}`),
-};
-
-export const alertsApi = {
-  list: () => request("/alerts"),
-  acknowledge: (id: string) =>
-    request(`/alerts/${id}/acknowledge`, { method: "POST" }),
-};
-
-export const stationsApi = {
-  list: () => request("/stations"),
-  get: (id: string) => request(`/stations/${id}`),
-  getReadings: (id: string) => request(`/stations/${id}/readings`),
-};
-
-export const fireApi = {
-  getActiveFires: (params?: URLSearchParams) =>
-    request(`/fire/active${params ? `?${params}` : ""}`),
-  getRiskZones: () => request("/fire/risk-zones"),
-};
-
-export const healthApi = {
-  check: () => request("/health"),
-};
+export interface ForecastDay {
+  date: string;
+  rainfall_mm: number;
+  confidence_pct: number;
+}

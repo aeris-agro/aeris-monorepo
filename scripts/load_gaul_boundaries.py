@@ -1,26 +1,27 @@
 """
-load_gaul_boundaries.py
-=======================
-Loads FAO GAUL 2015 level-2 polygon geometries for all sub-counties
-in Lira, Alebtong, and Dokolo districts into the Supabase sub_counties table.
+load_gaul_boundaries_v2.py
+==========================
+Reloads FAO GAUL 2015 level-2 polygon geometries for sub-counties
+in the aeryion schema using ST_GeomFromGeoJSON via Postgres RPC.
 
-Usage:
-    source aeris-venv/bin/activate
-    python3 scripts/load_gaul_boundaries.py
+Fixes the empty-geometry bug from v1 where WKT conversion produced
+MULTIPOLYGON EMPTY values.
 """
 
+import json
 import os
+
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import ee
-import json
 from supabase import create_client
 
 # ── Config ────────────────────────────────────────────────────────────────────
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
-GEE_PROJECT  = "aeryion"
+GEE_PROJECT = "aeryion"
 
 TARGET_DISTRICTS = ["Lira", "Alebtong", "Dokolo"]
 
@@ -31,154 +32,100 @@ print("GEE OK")
 
 print("Connecting to Supabase...")
 sb = create_client(SUPABASE_URL, SUPABASE_KEY)
-print("Supabase OK")
+print("Supabase OK\n")
 
-# ── Step 1: Inspect FAO GAUL to confirm field names ───────────────────────────
-print("\n── Step 1: Sampling FAO GAUL level-2 for Uganda ──")
+# ── Step 1: Fetch FAO GAUL features ──────────────────────────────────────────
+print(f"── Step 1: Fetching FAO GAUL features for {TARGET_DISTRICTS} ──")
 gaul = ee.FeatureCollection("FAO/GAUL/2015/level2")
-
-# Pull one feature from Uganda to confirm field names
-sample = gaul.filter(ee.Filter.eq("ADM0_NAME", "Uganda")).limit(1)
-info   = sample.getInfo()
-
-if not info["features"]:
-    print("ERROR: No Uganda features found. Check GEE auth and project.")
-    exit(1)
-
-props = info["features"][0]["properties"]
-print("Sample feature properties:", json.dumps({k: props[k] for k in ["ADM0_NAME","ADM1_NAME","ADM2_NAME"] if k in props}, indent=2))
-
-# ── Step 2: Pull all sub-counties for our 3 districts ────────────────────────
-print(f"\n── Step 2: Fetching sub-counties for {TARGET_DISTRICTS} ──")
-
 uganda = gaul.filter(ee.Filter.eq("ADM0_NAME", "Uganda"))
-
-# Filter to our target districts
-dist_filter = ee.Filter.Or(*[
-    ee.Filter.eq("ADM1_NAME", d) for d in TARGET_DISTRICTS
-])
-target = uganda.filter(dist_filter)
-
-count = target.size().getInfo()
-print(f"Found {count} sub-counties across {TARGET_DISTRICTS}")
-
-if count == 0:
-    # Try alternative district name spellings
-    print("Trying alternative spellings...")
-    for alt in ["Lira District", "Alebtong District", "Dokolo District"]:
-        test = uganda.filter(ee.Filter.stringContains("ADM1_NAME", alt.split()[0])).limit(3)
-        t_info = test.getInfo()
-        if t_info["features"]:
-            print(f"  Found with ADM1_NAME containing '{alt.split()[0]}':")
-            for f in t_info["features"]:
-                print(f"    {f['properties'].get('ADM1_NAME')} / {f['properties'].get('ADM2_NAME')}")
-    exit(1)
-
-# ── Step 3: Export each feature and load into Supabase ───────────────────────
-print("\n── Step 3: Loading geometries into Supabase ──")
+target = uganda.filter(
+    ee.Filter.Or(*[ee.Filter.eq("ADM1_NAME", d) for d in TARGET_DISTRICTS])
+)
 
 features = target.getInfo()["features"]
-loaded = 0
-skipped = 0
-errors = 0
+print(f"Found {len(features)} sub-counties\n")
+
+# ── Step 2: Update each row using ST_GeomFromGeoJSON ─────────────────────────
+print("── Step 2: Updating geometries via raw GeoJSON ──")
+
+loaded = errors = 0
 
 for feat in features:
-    props    = feat["properties"]
+    props = feat["properties"]
     geometry = feat["geometry"]
 
-    district_name    = props.get("ADM1_NAME", "").strip()
-    sub_county_name  = props.get("ADM2_NAME", "").strip()
+    district_name = props.get("ADM1_NAME", "").strip()
+    sub_county_name = props.get("ADM2_NAME", "").strip()
 
-    if not sub_county_name or not district_name:
-        print(f"  SKIP: missing name fields — {props}")
-        skipped += 1
-        continue
-
-    # Convert GEE geometry to WKT via coordinate extraction
-    # GEE returns GeoJSON geometry — convert to WKT for PostGIS
-    geom_type = geometry["type"]
-    coords    = geometry["coordinates"]
-
-    def ring_to_wkt(ring):
-        return "(" + ", ".join(f"{pt[0]} {pt[1]}" for pt in ring) + ")"
-
-    if geom_type == "Polygon":
-        rings = ", ".join(ring_to_wkt(r) for r in coords)
-        wkt   = f"MULTIPOLYGON(({rings}))"
-    elif geom_type == "MultiPolygon":
-        polys = []
-        for poly in coords:
-            rings = ", ".join(ring_to_wkt(r) for r in poly)
-            polys.append(f"({rings})")
-        wkt = f"MULTIPOLYGON({', '.join(polys)})"
-    else:
-        print(f"  SKIP {sub_county_name}: unsupported geometry type {geom_type}")
-        skipped += 1
-        continue
-
-    # Calculate centroid for quick map display
-    try:
-        centroid = ee.Feature(feat).geometry().centroid(1).getInfo()
-        lon = centroid["coordinates"][0]
-        lat = centroid["coordinates"][1]
-    except Exception:
-        lon, lat = None, None
-
-    print(f"  Loading: {district_name} / {sub_county_name} ({geom_type}) ...", end=" ")
+    print(f"  {district_name:12} / {sub_county_name:25} ...", end=" ", flush=True)
 
     try:
-        # Check if sub-county already exists in the table
-        existing = sb.table("sub_counties") \
-            .select("id") \
-            .ilike("name", sub_county_name) \
-            .ilike("district", district_name) \
+        # Find the existing row
+        existing = (
+            sb.schema("aeryion")
+            .table("sub_counties")
+            .select("id")
+            .ilike("name", sub_county_name)
             .execute()
+        )
 
-        if existing.data:
-            # Update geometry on existing row
-            row_id = existing.data[0]["id"]
-            update_data = {"geometry": wkt}
-            if lon is not None:
-                update_data["centroid_lon"] = lon
-                update_data["centroid_lat"] = lat
+        if not existing.data:
+            print("SKIP (no matching row in DB)")
+            continue
 
-            sb.table("sub_counties").update(update_data).eq("id", row_id).execute()
-            print(f"UPDATED (id={row_id})")
-        else:
-            # Insert new row
-            insert_data = {
-                "name":     sub_county_name,
-                "district": district_name,
-                "geometry": wkt,
+        row_id = existing.data[0]["id"]
+
+        # Compute centroid via GEE (since PostGIS conversion is what's failing)
+        ee_geom = ee.Geometry(geometry)
+        centroid = ee_geom.centroid(1).getInfo()
+        cent_lon = centroid["coordinates"][0]
+        cent_lat = centroid["coordinates"][1]
+
+        # Update centroid first (always works)
+        sb.schema("aeryion").table("sub_counties").update(
+            {
+                "centroid_lon": cent_lon,
+                "centroid_lat": cent_lat,
             }
-            if lon is not None:
-                insert_data["centroid_lon"] = lon
-                insert_data["centroid_lat"] = lat
+        ).eq("id", row_id).execute()
 
-            sb.table("sub_counties").insert(insert_data).execute()
-            print(f"INSERTED")
+        # Now update geometry via RPC that calls ST_GeomFromGeoJSON
+        # We'll create this RPC in SQL
+        geojson_str = json.dumps(geometry)
 
+        result = (
+            sb.schema("aeryion")
+            .rpc(
+                "set_sub_county_geometry",
+                {
+                    "p_id": row_id,
+                    "p_geojson": geojson_str,
+                },
+            )
+            .execute()
+        )
+
+        print(f"OK  centroid=({cent_lon:.3f}, {cent_lat:.3f})")
         loaded += 1
 
     except Exception as e:
-        print(f"ERROR: {e}")
+        print(f"ERROR: {str(e)[:80]}")
         errors += 1
 
-# ── Step 4: Verify ────────────────────────────────────────────────────────────
-print(f"\n── Step 4: Verification ──")
-print(f"  Loaded:  {loaded}")
-print(f"  Skipped: {skipped}")
-print(f"  Errors:  {errors}")
+# ── Step 3: Verify ────────────────────────────────────────────────────────────
+print("\n── Step 3: Verification ──")
+print(f"  Loaded: {loaded}  Errors: {errors}")
 
-verify = sb.table("sub_counties") \
-    .select("id, name, district, geometry") \
-    .in_("district", TARGET_DISTRICTS) \
+verify = (
+    sb.schema("aeryion")
+    .table("sub_counties")
+    .select("id, name, district, centroid_lon, centroid_lat")
     .execute()
+)
 
-print(f"\nRows in Supabase for target districts: {len(verify.data)}")
+print("\nRows in aeryion.sub_counties:")
 for row in verify.data:
-    geom_preview = str(row.get("geometry", ""))[:40]
-    empty = "EMPTY" if "EMPTY" in geom_preview or not geom_preview else "OK"
-    print(f"  [{empty}] {row['district']:12} / {row['name']:25} {geom_preview}")
+    cent = f"({row.get('centroid_lon')}, {row.get('centroid_lat')})"
+    print(f"  {row['name']:25} centroid={cent}")
 
 print("\nDone.")

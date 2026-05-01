@@ -18,6 +18,10 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def db(table: str):
     return supabase.schema("aeryion").table(table)
 
+
+def db_shared(table: str):
+    return supabase.schema("shared").table(table)
+
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def download_latest_geojson(prefix: str) -> dict:
@@ -37,10 +41,10 @@ def download_latest_geojson(prefix: str) -> dict:
     return json.loads(content)
 
 def get_or_create_district(name: str) -> str:
-    res = db("districts").select("id").eq("name", name).execute()
+    res = db_shared("districts").select("id").eq("name", name).execute()
     if res.data:
         return res.data[0]["id"]
-    ins = db("districts").insert({
+    ins = db_shared("districts").insert({
         "name": name,
         "code": name.lower()[:3],
         "geometry": "MULTIPOLYGON EMPTY"
@@ -48,10 +52,10 @@ def get_or_create_district(name: str) -> str:
     return ins.data[0]["id"]
 
 def get_or_create_sub_county(name: str, district_id: str) -> str:
-    res = db("sub_counties").select("id").eq("name", name).execute()
+    res = db_shared("sub_counties").select("id").eq("name", name).execute()
     if res.data:
         return res.data[0]["id"]
-    ins = db("sub_counties").insert({
+    ins = db_shared("sub_counties").insert({
         "name": name,
         "district_id": district_id,
         "geometry": "MULTIPOLYGON EMPTY"

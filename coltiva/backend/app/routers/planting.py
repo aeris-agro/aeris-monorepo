@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 from pydantic import BaseModel
 
-from app.db.supabase import coltiva, aeryion, resolve_sub_county
+from app.db.supabase import coltiva, aeryion, resolve_sub_county, shared
 from app.clients.aeryion import client as aeryion_client
 from app.services.sms import client as sms_client
 from app.models.schemas import (
@@ -213,7 +213,7 @@ def get_plot_advisory(plot_id: str):
 
     sc_name = "Unknown"
     if plot.get("sub_county_id"):
-        sc = aeryion("sub_counties").select("name").eq("id", plot["sub_county_id"]).single().execute()
+        sc = shared("sub_counties").select("name").eq("id", plot["sub_county_id"]).single().execute()
         if sc.data:
             sc_name = sc.data["name"]
 
@@ -264,7 +264,7 @@ def send_plot_advisory(plot_id: str):
 
     sc_name = "Unknown"
     if plot.get("sub_county_id"):
-        sc = aeryion("sub_counties").select("name").eq("id", plot["sub_county_id"]).single().execute()
+        sc = shared("sub_counties").select("name").eq("id", plot["sub_county_id"]).single().execute()
         if sc.data:
             sc_name = sc.data["name"]
 

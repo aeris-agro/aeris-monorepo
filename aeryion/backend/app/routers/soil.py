@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from app.db.supabase import aeryion
+from app.db.supabase import aeryion, shared
 
 router = APIRouter()
 
@@ -51,7 +51,7 @@ def get_soil_latest(
     Joins soil_baselines → sub_counties → districts.
     """
     # Get all sub-counties with district names (same pattern as ndvi.py)
-    sc_res = aeryion("sub_counties").select("id, name, districts(name)").execute()
+    sc_res = shared("sub_counties").select("id, name, districts(name)").execute()
     if not sc_res.data:
         raise HTTPException(status_code=404, detail="No sub-counties found")
 
@@ -131,7 +131,7 @@ def get_soil_latest(
 def get_soil_map():
     """GeoJSON FeatureCollection of soil health zones for map choropleth."""
     sc_res = (
-        aeryion("sub_counties").select("id, name, districts(name), geometry").execute()
+        shared("sub_counties").select("id, name, districts(name), geometry").execute()
     )
     if not sc_res.data:
         raise HTTPException(status_code=404, detail="No sub-counties found")

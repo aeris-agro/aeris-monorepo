@@ -34,3 +34,7 @@ def resolve_sub_county(longitude: float, latitude: float) -> str | None:
         return result.data if result.data else None
     except Exception:
         return None
+
+def shared(table: str):
+    """Shorthand — targets the shared schema (sub_counties, districts)."""
+    return get_supabase().schema("shared").table(table)

@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from app.models.schemas import RainfallResponse
-from app.db.supabase import aeryion
+from app.db.supabase import aeryion, shared
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ def get_rainfall_current(district: Optional[str] = Query(None)):
     Latest 90-day rainfall reading per sub-county.
     Optionally filter by district name e.g. ?district=Alebtong
     """
-    sc_res = aeryion("sub_counties").select("id, name, districts(name)").execute()
+    sc_res = shared("sub_counties").select("id, name, districts(name)").execute()
     if not sc_res.data:
         raise HTTPException(status_code=404, detail="No sub-counties found")
 

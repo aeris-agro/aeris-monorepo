@@ -82,7 +82,7 @@ for feat in features:
         cent_lat = centroid["coordinates"][1]
 
         # Update centroid first (always works)
-        sb.schema("aeryion").table("sub_counties").update(
+        sb.schema("shared").table("sub_counties").update(
             {
                 "centroid_lon": cent_lon,
                 "centroid_lat": cent_lat,

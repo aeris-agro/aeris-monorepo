@@ -36,7 +36,7 @@ print("Supabase OK\n")
 
 # Load sub-counties from aeryion schema
 print("── Step 1: Loading sub-counties from aeryion schema ──")
-sc_res = sb.schema("aeryion").table("sub_counties").select("id, name").execute()
+sc_res = sb.schema("shared").table("sub_counties").select("id, name").execute()
 sub_counties = sc_res.data
 print(f"Found {len(sub_counties)} sub-counties:")
 for sc in sub_counties:

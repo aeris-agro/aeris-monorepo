@@ -56,7 +56,7 @@ print("  Geometry verified.\n")
 
 # ── Step 2: Load existing DB rows ─────────────────────────────────────────────
 print("── Step 2: Loading aeryion.sub_counties rows ──")
-existing = sb.schema("aeryion").table("sub_counties").select("id, name").execute()
+existing = sb.schema("shared").table("sub_counties").select("id, name").execute()
 db_rows = {row["name"]: row["id"] for row in existing.data}
 print(f"  Found {len(db_rows)} rows: {list(db_rows.keys())}\n")
 
@@ -86,7 +86,7 @@ for feat in features:
         cent_lat = centroid_geom["coordinates"][1]
 
         # Update centroid columns
-        sb.schema("aeryion").table("sub_counties") \
+        sb.schema("shared").table("sub_counties") \
             .update({
                 "centroid_lon": cent_lon,
                 "centroid_lat": cent_lat,
@@ -127,7 +127,7 @@ for label, lng, lat in test_points:
     ).execute()
     if r.data:
         # Look up name
-        nm = sb.schema("aeryion").table("sub_counties").select("name").eq("id", r.data).execute()
+        nm = sb.schema("shared").table("sub_counties").select("name").eq("id", r.data).execute()
         name = nm.data[0]["name"] if nm.data else "?"
         print(f"  {label:12} ({lng}, {lat}) → {name}  [{r.data[:8]}...]")
     else:

@@ -2,10 +2,12 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
-from app.db.supabase import aeryion
+
+from app.db.supabase import aeryion, shared
+
 
 router = APIRouter()
+
 
 class StationResponse(BaseModel):
     id:              str
@@ -17,6 +19,7 @@ class StationResponse(BaseModel):
     deployed_at:     Optional[str]
     hardware_model:  Optional[str]
 
+
 class StationReading(BaseModel):
     reading_hour:      str
     temp_c_avg:        Optional[float]
@@ -27,6 +30,7 @@ class StationReading(BaseModel):
     soil_moisture_pct: Optional[float]
     battery_voltage:   Optional[float]
 
+
 @router.get("", response_model=List[StationResponse])
 def get_stations():
     """
@@ -34,24 +38,26 @@ def get_stations():
     Returns empty list until hardware is deployed (Month 2).
     """
     res = (aeryion("iot_stations")
-           .select("*, sub_counties(name)")
+           .select("*")
            .order("station_code")
            .execute())
-
     if not res.data:
         return []
+
+    # Fetch sub_county names from shared schema
+    sc_res = shared("sub_counties").select("id, name").execute()
+    sc_lookup = {row["id"]: row["name"] for row in (sc_res.data or [])}
 
     return [
         StationResponse(
             id              = str(row["id"]),
             station_code    = row["station_code"],
             name            = row["name"],
-            sub_county      = row.get("sub_counties", {}).get("name", "Unknown")
-                              if row.get("sub_counties") else "Unknown",
+            sub_county      = sc_lookup.get(row.get("sub_county_id"), "Unknown"),
             status          = row.get("status", "active"),
             last_reading_at = str(row["last_reading_at"]) if row.get("last_reading_at") else None,
             deployed_at     = str(row["deployed_at"]) if row.get("deployed_at") else None,
-            hardware_model  = row.get("hardware_model")
+            hardware_model  = row.get("hardware_model"),
         )
         for row in res.data
     ]
@@ -60,16 +66,14 @@ def get_stations():
 @router.get("/{station_id}/readings", response_model=List[StationReading])
 def get_station_readings(
     station_id: str,
-    hours: int = Query(24, ge=1, le=168, description="Hours of history to return (max 168 = 7 days)")
+    hours: int = Query(24, ge=1, le=168, description="Hours of history to return (max 168 = 7 days)"),
 ):
     """Last N hours of hourly readings from one station."""
-    # Verify station exists
     station = (aeryion("iot_stations")
                .select("id, name")
                .eq("id", station_id)
                .limit(1)
                .execute())
-
     if not station.data:
         raise HTTPException(status_code=404, detail=f"Station '{station_id}' not found")
 
@@ -79,7 +83,6 @@ def get_station_readings(
                 .order("reading_hour", desc=True)
                 .limit(hours)
                 .execute())
-
     if not readings.data:
         return []
 
@@ -92,7 +95,7 @@ def get_station_readings(
             humidity_pct      = row.get("humidity_pct"),
             rainfall_mm       = row.get("rainfall_mm"),
             soil_moisture_pct = row.get("soil_moisture_pct"),
-            battery_voltage   = row.get("battery_voltage")
+            battery_voltage   = row.get("battery_voltage"),
         )
         for row in readings.data
     ]

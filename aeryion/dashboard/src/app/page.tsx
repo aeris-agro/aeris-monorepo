@@ -70,11 +70,30 @@ interface SoilRecord {
   data_source: string;
 }
 
+interface RainfallHistoryPoint {
+  date: string;
+  rainfall_mm: number;
+}
+
+interface RainfallSeries {
+  sub_county: string;
+  daily: RainfallHistoryPoint[];
+}
+
+interface RainfallHistory {
+  start_date: string;
+  end_date: string;
+  data_source: string;
+  days: number;
+  series: RainfallSeries[];
+}
+
 interface LiveData {
   ndvi: NdviRecord[];
   forecast: ForecastDay[];
   alerts: Alert[];
   soil: SoilRecord[];
+  rainfallHistory: RainfallHistory | null;
 }
 
 // ── Static fallback / supplemental data ──────────────────────────────────────
@@ -401,15 +420,44 @@ function OverviewScreen({
             <div className="panel-header">
               <div>
                 <div className="panel-title">Rainfall — 30-day History</div>
-                <div className="panel-sub">CHIRPS + IoT fusion · mm/day</div>
+                <div className="panel-sub">
+                  {data.rainfallHistory
+                    ? `CHIRPS · 30 days ending ${data.rainfallHistory.end_date}`
+                    : "CHIRPS daily · loading"}
+                </div>
               </div>
             </div>
             <div className="panel-body">
-              <ChartBars
-                data={RAINFALL_30D}
-                height={90}
-                cls={(h) => (h > 20 ? "hi" : h < 6 ? "lo" : "")}
-              />
+              {(() => {
+                // Pick Lira's series as the headline; fallback to first available.
+                const series = data.rainfallHistory?.series ?? [];
+                const lira =
+                  series.find((s) => s.sub_county === "Lira") ?? series[0];
+                const values = lira?.daily.map((d) => d.rainfall_mm) ?? [];
+                if (values.length === 0) {
+                  return (
+                    <div
+                      style={{
+                        height: 90,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "var(--fg-dim)",
+                        fontSize: "0.72rem",
+                      }}
+                    >
+                      No rainfall history available
+                    </div>
+                  );
+                }
+                return (
+                  <ChartBars
+                    data={values}
+                    height={90}
+                    cls={(h) => (h > 20 ? "hi" : h < 6 ? "lo" : "")}
+                  />
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -1606,25 +1654,28 @@ export default function Page() {
     forecast: [],
     alerts: [],
     soil: [],
+    rainfallHistory: null,
   });
   const [lastUpdated, setLastUpdated] = useState("");
 
   const fetchAll = useCallback(async () => {
     setStatus("loading");
     try {
-      const [ndviRes, forecastRes, alertsRes, soilRes] = await Promise.all([
+      const [ndviRes, forecastRes, alertsRes, soilRes, rainHistRes] = await Promise.all([
         fetch("/api/v1/ndvi/latest"),
         fetch("/api/v1/forecast/7day?sub_county=Lira"),
         fetch("/api/v1/alerts/active"),
         fetch("/api/v1/soil/latest"),
+        fetch("/api/v1/rainfall/history?days=30"),
       ]);
-      const [ndvi, forecast, alerts, soil] = await Promise.all([
+      const [ndvi, forecast, alerts, soil, rainfallHistory] = await Promise.all([
         ndviRes.ok ? ndviRes.json() : [],
         forecastRes.ok ? forecastRes.json() : [],
         alertsRes.ok ? alertsRes.json() : [],
         soilRes.ok ? soilRes.json() : [],
+        rainHistRes.ok ? rainHistRes.json() : null,
       ]);
-      setData({ ndvi, forecast, alerts, soil });
+      setData({ ndvi, forecast, alerts, soil, rainfallHistory });
       setStatus("live");
       setLastUpdated(
         new Date().toLocaleTimeString("en-UG", {

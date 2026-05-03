@@ -95,6 +95,7 @@ aeris-venv/
 *.log
 .railway/
 .vercel/
+.cursor/
 
 # Project-specific
 aeris-venv/

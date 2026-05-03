@@ -1,0 +1,17 @@
+# AERIS Monorepo Code Owners
+
+# Global owners
+* @aeris-agro/maintainers
+
+# Frontend & Dashboard
+/linktrade/web/    @aeris-agro/linktrade-team
+/aeryion/dashboard/ @aeris-agro/aeryion-team
+
+# Backends
+/linktrade/backend/ @aeris-agro/linktrade-team
+/aeryion/backend/   @aeris-agro/aeryion-team
+/coltiva/backend/   @aeris-agro/coltiva-team
+
+# Shared resources
+/shared/            @aeris-agro/platform-team
+/infra/             @aeris-agro/platform-team

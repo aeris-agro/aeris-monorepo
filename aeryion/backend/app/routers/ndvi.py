@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from app.models.schemas import NDVIResponse
-from app.db.supabase import aeryion
+from app.db.supabase import aeryion, shared
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ def get_ndvi_latest(district: Optional[str] = Query(None)):
     Optionally filter by district name e.g. ?district=Lira
     """
     # Get all sub-counties with their district names
-    sc_res = aeryion("sub_counties").select("id, name, districts(name)").execute()
+    sc_res = shared("sub_counties").select("id, name, districts(name)").execute()
     if not sc_res.data:
         raise HTTPException(status_code=404, detail="No sub-counties found")
 
@@ -68,7 +68,7 @@ def get_ndvi_history(
     days: int = Query(90, ge=7, le=365)
 ):
     """NDVI time series for the last N days for a given sub-county."""
-    sc_res = (aeryion("sub_counties")
+    sc_res = (shared("sub_counties")
               .select("id, name")
               .ilike("name", sub_county_name)
               .limit(1)

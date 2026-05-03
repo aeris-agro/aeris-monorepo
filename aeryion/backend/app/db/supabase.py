@@ -13,3 +13,7 @@ def get_supabase() -> Client:
 def aeryion(table: str):
     """Shorthand — always targets the aeryion schema."""
     return get_supabase().schema("aeryion").table(table)
+
+def shared(table: str):
+    """Shorthand — targets the shared schema (sub_counties, districts, event_outbox)."""
+    return get_supabase().schema("shared").table(table)

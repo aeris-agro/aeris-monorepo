@@ -88,3 +88,18 @@ models/saved_model/
 *.key
 credentials.json
 service-account*.json
+
+# Project-specific
+aeris-venv/
+.DS_Store
+*.log
+.railway/
+.vercel/
+.cursor/
+
+# Project-specific
+aeris-venv/
+.DS_Store
+*.log
+.railway/
+.vercel/

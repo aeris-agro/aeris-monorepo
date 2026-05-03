@@ -47,14 +47,30 @@ interface ForecastDay {
 
 interface Alert {
   id: string;
-  severity: "critical" | "warning" | "info";
-  category: string;
-  title: string;
-  district: string;
   sub_county: string;
-  timestamp: string;
-  acknowledged: boolean;
+  alert_type: string;
+  severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+  forecast_date: string;
+  confidence_pct: number;
+  message_en: string;
+  message_luo: string | null;
+  active: boolean;
+  created_at: string;
 }
+
+// ── Severity helpers (backend returns uppercase 4-level severity) ──
+const sevClass = (s: Alert["severity"]) =>
+  s === "CRITICAL" ? "warn" : s === "HIGH" ? "amber" : s === "MEDIUM" ? "amber" : "info";
+
+const sevBadge = (s: Alert["severity"]) =>
+  s === "CRITICAL" ? "badge-red" : s === "HIGH" ? "badge-amber" : s === "MEDIUM" ? "badge-amber" : "badge-green";
+
+const sevIconColor = (s: Alert["severity"]) =>
+  s === "CRITICAL" ? "#e85d5d" : s === "HIGH" || s === "MEDIUM" ? "#f0a500" : "#2ecc71";
+
+// Derive a human title from alert_type (e.g. "rainfall_heavy" -> "Rainfall heavy")
+const alertTitle = (a: Alert) =>
+  a.alert_type.replace(/_/g, " ").replace(/\b\w/, (c) => c.toUpperCase());
 
 interface SoilRecord {
   sub_county: string;
@@ -290,7 +306,7 @@ function OverviewScreen({
   const totalRain = data.forecast
     .reduce((s, d) => s + d.rainfall_mm, 0)
     .toFixed(1);
-  const activeAlerts = data.alerts.filter((a) => !a.acknowledged).length;
+  const activeAlerts = data.alerts.filter((a) => a.active).length;
 
   const MAP_DISTRICTS = [
     { name: "Lira", top: "38%", left: "40%" },
@@ -485,32 +501,32 @@ function OverviewScreen({
                 </div>
               ) : (
                 data.alerts
-                  .filter((a) => !a.acknowledged)
+                  .filter((a) => a.active)
                   .map((a) => (
                     <div
                       key={a.id}
-                      className={`alert-card ${a.severity === "critical" ? "warn" : a.severity === "warning" ? "amber" : "info"}`}
+                      className={`alert-card ${sevClass(a.severity)}`}
                     >
                       <div
-                        className={`alert-icon ${a.severity === "critical" ? "warn" : a.severity === "warning" ? "amber" : "info"}`}
+                        className={`alert-icon ${sevClass(a.severity)}`}
                       >
-                        {a.category === "rainfall" ? (
-                          <CloudLightning size={14} color="#e85d5d" />
-                        ) : a.category === "pest" ? (
-                          <Bug size={14} color="#f0a500" />
+                        {a.alert_type.startsWith("rainfall") ? (
+                          <CloudLightning size={14} color={sevIconColor(a.severity)} />
+                        ) : a.alert_type.startsWith("pest") ? (
+                          <Bug size={14} color={sevIconColor(a.severity)} />
                         ) : (
-                          <Sun size={14} color="#2ecc71" />
+                          <Sun size={14} color={sevIconColor(a.severity)} />
                         )}
                       </div>
                       <div>
-                        <div className="alert-title">{a.title}</div>
+                        <div className="alert-title">{alertTitle(a)}</div>
                         <div className="alert-meta">
-                          {a.district} · {a.sub_county}
+                          {a.sub_county} · Lango
                         </div>
                       </div>
                       <div className="alert-badge">
                         <span
-                          className={`badge ${a.severity === "critical" ? "badge-red" : a.severity === "warning" ? "badge-amber" : "badge-green"}`}
+                          className={`badge ${sevBadge(a.severity)}`}
                         >
                           {a.severity}
                         </span>
@@ -562,10 +578,10 @@ function OverviewScreen({
 // ── Alerts ────────────────────────────────────────────────────────────────────
 function AlertsScreen({ data }: { data: LiveData }) {
   const critical = data.alerts.filter(
-    (a) => !a.acknowledged && a.severity === "critical",
+    (a) => a.active && a.severity === "CRITICAL",
   ).length;
   const warnings = data.alerts.filter(
-    (a) => !a.acknowledged && a.severity === "warning",
+    (a) => a.active && (a.severity === "HIGH" || a.severity === "MEDIUM"),
   ).length;
   return (
     <>
@@ -630,21 +646,23 @@ function AlertsScreen({ data }: { data: LiveData }) {
         data.alerts.map((a) => (
           <div
             key={a.id}
-            className={`alert-card ${a.severity === "critical" ? "warn" : "amber"}`}
+            className={`alert-card ${sevClass(a.severity)}`}
             style={{ marginBottom: 10 }}
           >
             <div
-              className={`alert-icon ${a.severity === "critical" ? "warn" : "amber"}`}
+              className={`alert-icon ${sevClass(a.severity)}`}
               style={{ width: 38, height: 38 }}
             >
-              {a.category === "rainfall" ? (
-                <CloudLightning size={16} color="#e85d5d" />
+              {a.alert_type.startsWith("rainfall") ? (
+                <CloudLightning size={16} color={sevIconColor(a.severity)} />
+              ) : a.alert_type.startsWith("pest") ? (
+                <Bug size={16} color={sevIconColor(a.severity)} />
               ) : (
-                <Bug size={16} color="#f0a500" />
+                <Sun size={16} color={sevIconColor(a.severity)} />
               )}
             </div>
             <div style={{ flex: 1 }}>
-              <div className="alert-title">{a.title}</div>
+              <div className="alert-title">{alertTitle(a)}</div>
               <div
                 style={{
                   marginTop: 8,
@@ -652,7 +670,7 @@ function AlertsScreen({ data }: { data: LiveData }) {
                   color: "var(--fg-dim)",
                 }}
               >
-                {a.district} · {a.sub_county} · {a.timestamp}
+                {a.sub_county} · Lango · {new Date(a.created_at).toLocaleString('en-UG')}
               </div>
             </div>
             <div
@@ -665,12 +683,12 @@ function AlertsScreen({ data }: { data: LiveData }) {
               }}
             >
               <span
-                className={`badge ${a.severity === "critical" ? "badge-red" : "badge-amber"}`}
+                className={`badge ${sevBadge(a.severity)}`}
               >
                 {a.severity}
               </span>
               <span className="badge badge-gray">
-                {a.category.toUpperCase()}
+                {a.alert_type.toUpperCase()}
               </span>
             </div>
           </div>
@@ -1694,7 +1712,7 @@ export default function Page() {
     return () => clearInterval(id);
   }, [fetchAll]);
 
-  const activeAlerts = data.alerts.filter((a) => !a.acknowledged).length;
+  const activeAlerts = data.alerts.filter((a) => a.active).length;
   const apiDot = { live: "#2ecc71", offline: "#e85d5d", loading: "#f0a500" }[
     apiStatus
   ];

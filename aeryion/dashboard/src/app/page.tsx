@@ -721,7 +721,7 @@ function WeatherScreen({ data }: { data: LiveData }) {
             {totalMm}
             <span>mm</span>
           </div>
-          <div className="metric-sub">LSTM model · live</div>
+          <div className="metric-sub">LSTM Model · live</div>
         </div>
         <div className="metric-card">
           <div className="metric-label">Model Confidence</div>

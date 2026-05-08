@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import (
     agents,
+    auth,
     farmers,
     health,
     pest_reports,
@@ -40,6 +41,7 @@ app.add_middleware(
 API_V1 = "/api/v1"
 
 app.include_router(health.router, prefix=API_V1, tags=["Health"])
+app.include_router(auth.router, prefix=API_V1, tags=["Auth"])
 app.include_router(farmers.router, prefix=API_V1, tags=["Farmers"])
 app.include_router(planting.router, prefix=API_V1, tags=["Planting"])
 app.include_router(pest_reports.router, prefix=API_V1, tags=["Pest Reports"])

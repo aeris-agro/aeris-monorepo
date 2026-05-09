@@ -1,6 +1,7 @@
 packages:
   - linktrade/web
   - aeryion/dashboard
+  - coltiva/website
 
 onlyBuiltDependencies:
   - sharp

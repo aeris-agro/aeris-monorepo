@@ -1,0 +1,373 @@
+@import "tailwindcss";
+
+/* ========================================================================
+   AERIS Coltiva — Global Styles
+   Tokens lifted from /design-system/colors_and_type.css
+   Marketing site: light theme by default (audience: first-time visitors)
+   ======================================================================== */
+
+:root {
+  /* Brand greens */
+  --aeris-green:        #22803f;
+  --aeris-green-dark:   #1a6a32;
+  --aeris-green-bright: #2ecc71;
+
+  /* Brand accent */
+  --aeris-gold:         #f0a500;
+
+  /* Typography */
+  --font-primary: "Manrope", system-ui, -apple-system, sans-serif;
+
+  /* Radius */
+  --radius-card:  16px;
+  --radius-modal: 20px;
+  --radius-pill:  50px;
+  --radius-sm:    8px;
+
+  /* Transitions */
+  --transition: 0.3s ease;
+
+  /* Type scale */
+  --text-xs:   0.65rem;
+  --text-sm:   0.75rem;
+  --text-base: 0.875rem;
+  --text-md:   0.9375rem;
+  --text-lg:   1rem;
+  --text-xl:   1.125rem;
+  --text-2xl:  1.375rem;
+  --text-3xl:  1.625rem;
+  --text-4xl:  2rem;
+  --text-5xl:  2.5rem;
+  --text-hero: clamp(2rem, 5vw, 3.5rem);
+  --text-h1:   clamp(1.75rem, 3.5vw, 2.75rem);
+  --text-h2:   clamp(1.375rem, 2.5vw, 1.875rem);
+
+  /* Light surfaces (default) */
+  --bg:           #f4f9f5;
+  --bg-2:         #eaf3ec;
+  --bg-card:      rgba(255,255,255,0.85);
+  --bg-card-h:    rgba(255,255,255,1);
+  --bg-stat:      rgba(255,255,255,0.75);
+  --bg-footer:    #e4f0e7;
+
+  --border:       rgba(34,128,63,0.12);
+  --border-card:  rgba(34,128,63,0.14);
+  --border-nav:   rgba(34,128,63,0.10);
+  --border-green: rgba(34,128,63,0.25);
+
+  --fg:           #0d2015;
+  --fg-muted:     #3a5a43;
+  --fg-dim:       #6a8a73;
+  --fg-nav:       #3a5a43;
+
+  --nav-bg:       rgba(255,255,255,0.85);
+
+  --tag-bg:       rgba(34,128,63,0.08);
+  --tag-border:   rgba(34,128,63,0.25);
+  --tag-color:    #22803f;
+
+  --cta-bg:       linear-gradient(135deg,#d4eddd 0%,#c8e8d0 50%,#d4eddd 100%);
+  --cta-border:   rgba(34,128,63,0.20);
+
+  --accent:       var(--aeris-green);
+  --accent-dim:   var(--aeris-green-dark);
+
+  /* Shadows */
+  --shadow-card:  0 2px 12px rgba(13,32,21,0.08);
+  --shadow-card-h:0 8px 32px rgba(34,128,63,0.18);
+  --shadow-nav:   0 1px 0 rgba(34,128,63,0.06);
+}
+
+/* Dark sections (CTA bands, hero overlays) inherit dark surfaces locally */
+.theme-dark {
+  --bg:           #0d1a10;
+  --bg-2:         #111a13;
+  --bg-card:      rgba(255,255,255,0.04);
+  --bg-card-h:    rgba(255,255,255,0.07);
+  --bg-stat:      rgba(0,0,0,0.38);
+
+  --border:       rgba(255,255,255,0.08);
+  --border-card:  rgba(255,255,255,0.07);
+  --border-green: rgba(46,204,113,0.30);
+
+  --fg:           #ffffff;
+  --fg-muted:     rgba(255,255,255,0.65);
+  --fg-dim:       rgba(255,255,255,0.45);
+
+  --tag-bg:       rgba(34,128,63,0.12);
+  --tag-border:   rgba(34,128,63,0.30);
+  --tag-color:    #2ecc71;
+
+  --accent:       var(--aeris-green-bright);
+  --accent-dim:   var(--aeris-green);
+}
+
+/* ── Base ────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover {
+  color: var(--accent-dim);
+}
+
+/* ── Typography utilities ────────────────────────────────────────── */
+.aeris-hero-title {
+  font-size: var(--text-hero);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.aeris-h1 {
+  font-size: var(--text-h1);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.aeris-h2 {
+  font-size: var(--text-h2);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.aeris-body {
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.75;
+  color: var(--fg-muted);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.aeris-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--aeris-green);
+  color: #fff;
+  font-family: var(--font-primary);
+  font-size: var(--text-md);
+  font-weight: 600;
+  padding: 0.85rem 2rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+  min-height: 44px; /* tap-target */
+}
+.aeris-btn-primary:hover:not(:disabled) {
+  background: var(--aeris-green-dark);
+  transform: translateY(-1px);
+  color: #fff;
+}
+.aeris-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.aeris-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--font-primary);
+  font-size: var(--text-md);
+  font-weight: 500;
+  padding: 0.8rem 1.75rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color var(--transition), background var(--transition);
+  min-height: 44px;
+}
+.aeris-btn-ghost:hover {
+  border-color: var(--border-green);
+  background: var(--bg-card-h);
+  color: var(--fg);
+}
+
+/* ── Tag / pill ──────────────────────────────────────────────────── */
+.aeris-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  color: var(--tag-color);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.875rem;
+  border-radius: var(--radius-pill);
+}
+
+/* ── Card ────────────────────────────────────────────────────────── */
+.aeris-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: background var(--transition), border-color var(--transition),
+              transform var(--transition), box-shadow var(--transition);
+}
+.aeris-card:hover {
+  border-color: var(--border-green);
+  background: var(--bg-card-h);
+  box-shadow: var(--shadow-card-h);
+  transform: translateY(-2px);
+}
+
+/* ── Form inputs ─────────────────────────────────────────────────── */
+.aeris-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-family: var(--font-primary);
+  font-size: var(--text-md);
+  padding: 0.8rem 1rem;
+  transition: border-color var(--transition), background var(--transition);
+  min-height: 48px;
+}
+.aeris-input:focus {
+  outline: none;
+  border-color: var(--aeris-green);
+  background: var(--bg-card-h);
+}
+.aeris-input::placeholder {
+  color: var(--fg-dim);
+}
+
+.aeris-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.aeris-error {
+  color: #c0392b;
+  font-size: var(--text-sm);
+  margin-top: 0.5rem;
+}
+
+/* ── Logo mark ───────────────────────────────────────────────────── */
+.coltiva-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+}
+.coltiva-logo-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--aeris-green) 0%, var(--aeris-green-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+}
+.coltiva-logo-text {
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+
+/* ── Section spacing ─────────────────────────────────────────────── */
+.aeris-section {
+  padding: 4rem 0;
+}
+@media (min-width: 768px) {
+  .aeris-section {
+    padding: 6rem 0;
+  }
+}
+
+.aeris-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+@media (min-width: 768px) {
+  .aeris-container {
+    padding: 0 2rem;
+  }
+}
+
+/* ── OTP code input grid ─────────────────────────────────────────── */
+.otp-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  max-width: 360px;
+  margin: 0 auto;
+}
+@media (min-width: 480px) {
+  .otp-grid {
+    gap: 0.75rem;
+  }
+}
+
+.otp-input {
+  aspect-ratio: 1;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-primary);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  transition: border-color var(--transition), background var(--transition);
+  padding: 0;
+  width: 100%;
+  min-height: 48px;
+}
+.otp-input:focus {
+  outline: none;
+  border-color: var(--aeris-green);
+  background: var(--bg-card-h);
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.aeris-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

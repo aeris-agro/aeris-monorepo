@@ -1,18 +1,21 @@
-africastalking>=1.2.7
-black>=24.1.0
+# Coltiva backend — runtime dependencies
+# Slim by design. Only what app/ and workers/ actually import.
+# Last cleaned 2026-05-09.
+
+# Web framework
 fastapi>=0.109.0
-flake8>=7.0.0
-httpx>=0.26.0
-kafka-python>=2.0.2
-mypy>=1.8.0
+uvicorn[standard]>=0.27.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
-pyjwt>=2.8.0
-pytest>=7.4.0
-pytest-asyncio>=0.23.0
-pytest-cov>=4.1.0
+
+# Environment / config
 python-dotenv>=1.0.0
-python-multipart>=0.0.6
-sentry-sdk[fastapi]>=1.40.0
+
+# Database
 supabase>=2.3.0
-uvicorn[standard]>=0.27.0
+
+# HTTP client (used by SmsClient + general use)
+httpx>=0.26.0
+
+# JWT signing for OTP signup tokens + session tokens
+pyjwt>=2.8.0

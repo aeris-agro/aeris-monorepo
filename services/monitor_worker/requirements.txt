@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+supabase
+asyncpg
+httpx
+python-dotenv
+apscheduler

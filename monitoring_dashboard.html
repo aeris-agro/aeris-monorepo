@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AERIS | Database Monitoring Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .critical { color: #f43f5e; border-color: #f43f5e; }
+        .warning { color: #fbbf24; border-color: #fbbf24; }
+        .healthy { color: #10b981; border-color: #10b981; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+                    AERIS Database Monitor
+                </h1>
+                <p class="text-slate-400">Real-time health telemetry & CAP-aware alerting</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="toggleConfig()" class="px-4 py-2 glass rounded-lg hover:bg-slate-700 transition">Settings</button>
+                <div id="status-indicator" class="flex items-center gap-2 px-4 py-2 glass rounded-lg">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-sm font-medium">Live</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Config Modal -->
+        <div id="config-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="glass p-6 rounded-2xl w-full max-w-md shadow-2xl">
+                <h2 class="text-xl font-bold mb-4">Connection Settings</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-slate-500 mb-1">Supabase URL</label>
+                        <input id="sb-url" type="text" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-slate-500 mb-1">Anon Key</label>
+                        <input id="sb-key" type="password" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="flex gap-2 pt-4">
+                        <button onclick="saveConfig()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg transition">Save & Refresh</button>
+                        <button onclick="toggleConfig()" class="flex-1 glass hover:bg-slate-700 py-2 rounded-lg transition">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Metrics Cards -->
+            <div class="lg:col-span-2 space-y-6">
+                <div id="metrics-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Cards will be injected here -->
+                </div>
+
+                <!-- Metrics Table -->
+                <div class="glass rounded-2xl overflow-hidden">
+                    <div class="p-4 border-b border-white/5 bg-white/5">
+                        <h2 class="font-semibold">All Telemetry</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="text-xs uppercase text-slate-500 bg-slate-900/50">
+                                <tr>
+                                    <th class="px-6 py-3">Metric</th>
+                                    <th class="px-6 py-3">Value</th>
+                                    <th class="px-6 py-3">Severity</th>
+                                    <th class="px-6 py-3">Last Checked</th>
+                                </tr>
+                            </thead>
+                            <tbody id="metrics-table-body" class="divide-y divide-white/5">
+                                <!-- Table rows will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Alert Log -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="font-semibold mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                        Recent Alerts
+                    </h2>
+                    <div id="alert-log" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                        <!-- Alerts will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Stats Chart -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="font-semibold mb-4">Severity Distribution</h2>
+                    <canvas id="severityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let supabaseClient = null;
+        let chart = null;
+
+        function toggleConfig() {
+            document.getElementById('config-modal').classList.toggle('hidden');
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('sb-url').value;
+            const key = document.getElementById('sb-key').value;
+            localStorage.setItem('aeris_sb_url', url);
+            localStorage.setItem('aeris_sb_key', key);
+            initSupabase();
+            toggleConfig();
+            fetchData();
+        }
+
+        function initSupabase() {
+            const url = localStorage.getItem('aeris_sb_url');
+            const key = localStorage.getItem('aeris_sb_key');
+            if (url && key) {
+                supabaseClient = supabase.createClient(url, key);
+                document.getElementById('sb-url').value = url;
+                document.getElementById('sb-key').value = key;
+            } else {
+                toggleConfig();
+            }
+        }
+
+        async function fetchData() {
+            if (!supabaseClient) return;
+
+            try {
+                // Fetch Snapshots
+                const { data: snapshots, error: snapError } = await supabaseClient
+                    .from('latest_snapshots')
+                    .select('*');
+                
+                if (snapError) throw snapError;
+
+                // Fetch Alert Log
+                const { data: alerts, error: alertError } = await supabaseClient
+                    .from('alert_log')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (alertError) throw alertError;
+
+                renderDashboard(snapshots, alerts);
+            } catch (err) {
+                console.error('Fetch error:', err);
+            }
+        }
+
+        function renderDashboard(snapshots, alerts) {
+            const grid = document.getElementById('metrics-grid');
+            const table = document.getElementById('metrics-table-body');
+            const log = document.getElementById('alert-log');
+
+            grid.innerHTML = '';
+            table.innerHTML = '';
+            log.innerHTML = '';
+
+            let sevCounts = { healthy: 0, warning: 0, critical: 0 };
+
+            snapshots.forEach(snap => {
+                sevCounts[snap.severity]++;
+                
+                // Card
+                const card = document.createElement('div');
+                card.className = `glass p-4 rounded-xl border-l-4 ${snap.severity}`;
+                card.innerHTML = `
+                    <div class="text-xs uppercase text-slate-500 mb-1">${snap.metric_name.replace(/_/g, ' ')}</div>
+                    <div class="text-2xl font-bold">${snap.metric_value.toLocaleString()}</div>
+                    <div class="text-[10px] mt-2 opacity-50">${new Date(snap.created_at).toLocaleTimeString()}</div>
+                `;
+                grid.appendChild(card);
+
+                // Table Row
+                const row = document.createElement('tr');
+                row.className = "hover:bg-white/5 transition";
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-medium">${snap.metric_name}</td>
+                    <td class="px-6 py-4">${snap.metric_value}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase bg-white/5 ${snap.severity}">${snap.severity}</span></td>
+                    <td class="px-6 py-4 text-xs text-slate-500">${new Date(snap.created_at).toLocaleString()}</td>
+                `;
+                table.appendChild(row);
+            });
+
+            alerts.forEach(alert => {
+                const item = document.createElement('div');
+                item.className = "text-sm p-3 rounded-lg bg-slate-800/50 border border-white/5";
+                item.innerHTML = `
+                    <div class="flex justify-between mb-1">
+                        <span class="font-bold ${alert.severity}">${alert.metric_name}</span>
+                        <span class="text-[10px] text-slate-500">${new Date(alert.created_at).toLocaleTimeString()}</span>
+                    </div>
+                    <div class="text-slate-400 text-xs">${alert.message}</div>
+                `;
+                log.appendChild(item);
+            });
+
+            updateChart(sevCounts);
+        }
+
+        function updateChart(counts) {
+            const ctx = document.getElementById('severityChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Healthy', 'Warning', 'Critical'],
+                    datasets: [{
+                        data: [counts.healthy, counts.warning, counts.critical],
+                        backgroundColor: ['#10b981', '#fbbf24', '#f43f5e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        initSupabase();
+        if (supabaseClient) fetchData();
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>

@@ -371,3 +371,41 @@ a:hover {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+/* ── Additions for new landing page ───────────────────────────────── */
+
+/* Hero responsive grid (2-col desktop, stacked mobile) */
+.hero-grid {
+  display:               grid;
+  grid-template-columns: 1fr;
+  gap:                   3rem;
+  align-items:           center;
+}
+@media (min-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1.05fr 1fr;
+    gap:                   4rem;
+  }
+}
+
+/* Pulse — used for "Now live" indicator dot */
+@keyframes pulse {
+  0%, 100% {
+    transform:  scale(1);
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+  }
+  50% {
+    transform:  scale(1.1);
+    box-shadow: 0 0 0 8px rgba(46, 204, 113, 0);
+  }
+}
+
+/* Blink — USSD cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* Smooth scroll for in-page anchors */
+html {
+  scroll-behavior: smooth;
+}

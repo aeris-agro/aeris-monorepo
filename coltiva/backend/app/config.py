@@ -10,6 +10,7 @@ class Settings(BaseSettings):
 
     SUPABASE_URL: str = ""
     SUPABASE_SERVICE_KEY: str = ""
+    SUPABASE_JWT_SECRET: str = ""
 
     UPSTASH_KAFKA_BOOTSTRAP: str = ""
     UPSTASH_KAFKA_USERNAME: str = ""

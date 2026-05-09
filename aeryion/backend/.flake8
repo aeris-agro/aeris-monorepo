@@ -1,0 +1,26 @@
+[flake8]
+max-line-length = 120
+extend-ignore =
+    # Whitespace style — we use aligned assignments intentionally
+    E221,
+    E222,
+    E251,
+    E261,
+    # Blank-line spacing rules
+    E302,
+    E305,
+    # Module-level imports after sys.path manipulation (workers do this)
+    E402,
+    # End-of-file newline issues
+    W292,
+    W391,
+    # f-string without placeholders (intentional for grouped log lines)
+    F541
+exclude =
+    __pycache__,
+    aeris-venv,
+    .venv,
+    .git
+per-file-ignores =
+    # Workers intentionally use multiple unused imports near top for clarity
+    workers/seed_demo_alerts.py:F401

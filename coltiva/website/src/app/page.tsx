@@ -402,7 +402,7 @@ export default function LandingPage() {
             }}
           >
             Join Lango farmers getting reliable information on weather
-            and fair market prices — completely free.sss
+            and fair market prices — completely free.
           </p>
           <Link href="/signup" className="aeris-btn-primary">
             Create your free account

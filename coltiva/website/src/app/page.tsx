@@ -183,6 +183,7 @@ export default function LandingPage() {
       >
         <div className="aeris-container">
           <div
+            className="stats-grid"
             style={{
               display:             "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
@@ -207,6 +208,7 @@ export default function LandingPage() {
                 }}
               >
                 <div
+                  className="stat-num"
                   style={{
                     fontSize:      "var(--text-4xl)",
                     fontWeight:    800,
@@ -429,7 +431,7 @@ export default function LandingPage() {
         }}
       >
         <div
-          className="aeris-container"
+          className="aeris-container site-footer-row"
           style={{
             display:        "flex",
             justifyContent: "space-between",
@@ -511,6 +513,7 @@ function StepCard({ n, title, body }: { n: string; title: string; body: string }
       style={{ padding: "2rem", position: "relative", overflow: "hidden" }}
     >
       <div
+        className="step-badge"
         style={{
           position:      "absolute",
           top:           "1rem",
@@ -624,7 +627,7 @@ function StoryCard({
         “{quote}”
       </p>
 
-      <div style={{ display: "flex", gap: "0.625rem", marginBottom: "1.125rem" }}>
+      <div className="story-compare" style={{ display: "flex", gap: "0.625rem", marginBottom: "1.125rem" }}>
         <div
           style={{
             flex:         1,

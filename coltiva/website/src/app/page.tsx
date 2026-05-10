@@ -134,9 +134,9 @@ export default function LandingPage() {
                 }}
               >
                 {[
-                  "6 crops covered",
-                  "Satellite-powered",
-                  "Always free for farmers",
+                  // "6 crops covered",
+                  // "Satellite-powered",
+                  // "Always free for farmers",
                 ].map((label) => (
                   <span
                     key={label}
@@ -172,7 +172,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── STATS STRIP ──────────────────────────────────────────────── */}
-      <section
+      {/* <section
         className="theme-dark"
         style={{
           background:  "#0a1f10",
@@ -232,7 +232,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────── */}
       <section id="how-it-works" className="aeris-section">
@@ -293,7 +293,7 @@ export default function LandingPage() {
             <FeatureCard
               tag="Weather"
               title="72-hour weather alerts"
-              body="Drought risk, flood warnings, and planting-window alerts before damage occurs. Powered by Sentinel-2 satellite data, refreshed every 5 days across Lango."
+              body="Drought risk, flood warnings, and planting-window alerts before damage occurs. Powered by data from Aeryion (our environmental monitoring tool), refreshed every 5 days across Lango."
             />
             <FeatureCard
               tag="Soil"
@@ -315,7 +315,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FARMER STORIES ───────────────────────────────────────────── */}
-      <section id="impact" className="aeris-section">
+      {/* <section id="impact" className="aeris-section">
         <div className="aeris-container">
           <SectionEyebrow>Farmer stories</SectionEyebrow>
           <h2 className="aeris-h1" style={{ marginBottom: "3rem", maxWidth: "640px" }}>
@@ -355,7 +355,7 @@ export default function LandingPage() {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
       <section
@@ -401,8 +401,8 @@ export default function LandingPage() {
               margin:   "0 auto 2.25rem",
             }}
           >
-            Join Lango farmers getting satellite-powered advice, weather alerts,
-            and fair market prices — completely free.
+            Join Lango farmers getting reliable information on weather
+            and fair market prices — completely free.sss
           </p>
           <Link href="/signup" className="aeris-btn-primary">
             Create your free account
@@ -449,7 +449,7 @@ export default function LandingPage() {
               margin:   0,
             }}
           >
-            Part of <strong style={{ color: "var(--fg)" }}>AERIS Group</strong> · Built in Uganda
+            Part of <strong style={{ color: "var(--fg)" }}>AERIS AGRO</strong> · Built in Uganda
           </p>
         </div>
       </footer>

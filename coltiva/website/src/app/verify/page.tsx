@@ -110,7 +110,7 @@ export default function VerifyPage() {
         saveSession(res.access_token, res.refresh_token, res.user_profile);
         clearPendingPhone();
         setStage("redirecting");
-        redirectToDashboard(res.access_token, res.refresh_token);
+        redirectToDashboard(res.access_token, res.refresh_token, res.user_profile);
       } else {
         setError("Unexpected response. Please try again.");
       }
@@ -148,7 +148,7 @@ export default function VerifyPage() {
       saveSession(res.access_token, res.refresh_token, res.user_profile);
       clearPendingPhone();
       setStage("redirecting");
-      redirectToDashboard(res.access_token, res.refresh_token);
+      redirectToDashboard(res.access_token, res.refresh_token, res.user_profile);
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : "Could not complete signup.");
     } finally {

@@ -69,13 +69,27 @@ export function clearPendingPhone() {
 }
 
 /**
- * Redirect to the Coltiva dashboard. Tokens are passed via URL fragment so
- * they aren't logged in browser history or sent to the backend in headers.
+ * Redirect to the Coltiva dashboard. Tokens + profile are passed via URL
+ * fragment so they're not logged in browser history or sent to the backend
+ * in headers. The dashboard reads them on first load (different origin =
+ * separate localStorage, so we can't share it directly).
  */
-export function redirectToDashboard(access: string, refresh: string) {
+export function redirectToDashboard(
+  access:  string,
+  refresh: string,
+  profile: UserProfile,
+) {
+  // Encode profile as base64 so it survives URL fragment safely
+  const profileB64 =
+    typeof window !== "undefined"
+      ? btoa(unescape(encodeURIComponent(JSON.stringify(profile))))
+      : "";
+
   const fragment = new URLSearchParams({
     access_token:  access,
     refresh_token: refresh,
+    user_profile:  profileB64,
   }).toString();
+
   window.location.href = `${DASHBOARD_URL}/#${fragment}`;
 }

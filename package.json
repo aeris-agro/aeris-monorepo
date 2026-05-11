@@ -15,7 +15,10 @@
     "dev:all": "pnpm -r --parallel dev",
     "dev:website": "pnpm --filter coltiva-website dev",
     "build:website": "pnpm --filter coltiva-website build",
-    "lint:website": "pnpm --filter coltiva-website lint"
+    "lint:website": "pnpm --filter coltiva-website lint",
+    "dev:dashboard-coltiva": "pnpm --filter coltiva-dashboard dev",
+    "build:dashboard-coltiva": "pnpm --filter coltiva-dashboard build",
+    "lint:dashboard-coltiva": "pnpm --filter coltiva-dashboard lint"
   },
   "engines": {
     "node": ">=20.0.0",

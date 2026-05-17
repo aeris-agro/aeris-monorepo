@@ -337,3 +337,163 @@ html { scroll-behavior: smooth; }
     gap: 4rem !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   MOBILE OPTIMISATION PASS — appended after launch
+   Targets fixes for screens ≤ 640px:
+   1. Stats strip → 2×2 grid
+   2. Hero vertical padding tighter
+   3. Closed-loop "01/02/03" badges more visible
+   4. Pillar audience row wraps cleanly
+   5. LinkTrade "Coming soon" gets a visible affordance
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Stats strip: 2×2 on mobile, not 4 single rows ──────────── */
+@media (max-width: 640px) {
+  /* Force 2x2 grid on the stats strip (was collapsing to 1 column at
+     360-400px because the original auto-fit minmax(180px, 1fr) rule
+     doesn't fit two columns at narrow widths). */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5rem 1rem !important;
+  }
+  .stat-num   { font-size: 1.625rem !important; }
+  .stat-label { font-size: 0.625rem !important; }
+}
+
+/* ── 2. Hero vertical padding tighter on mobile ────────────────── */
+@media (max-width: 640px) {
+  .hero {
+    padding: 2.5rem 0 3rem !important;
+  }
+  .hero-title {
+    margin-bottom: 1rem !important;
+    line-height: 1.08 !important;
+  }
+  .hero-sub {
+    font-size: 1rem !important;
+    margin-bottom: 1.75rem !important;
+    line-height: 1.55 !important;
+  }
+  /* Buttons stack on very small screens for full-tappable rows */
+  .hero > .aeris-container > div:last-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .hero > .aeris-container > div:last-child > a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Reduce the eyebrow pill's bottom margin so hero is more compact */
+@media (max-width: 640px) {
+  .hero .aeris-container > div:first-child {
+    margin-bottom: 1.25rem !important;
+  }
+}
+
+/* ── 3. Closed-loop "01/02/03" ghost numbers more visible ──────── */
+/* The position:absolute div with the giant number background.
+   Was rgba(46,204,113,0.07) — too dim on phone. Bump opacity and
+   shrink slightly so it reads as decoration, not damage. */
+@media (max-width: 640px) {
+  /* Target the closed-loop step cards (FlowStep component renders an
+     .aeris-card with a position:absolute child containing the digit). */
+  section#how-it-works .aeris-card > div[aria-hidden] {
+    font-size: 3rem !important;
+    color: rgba(46,204,113,0.16) !important;
+    top: 0.875rem !important;
+    right: 1rem !important;
+  }
+}
+
+/* ── 4. Pillar audience row breaks cleanly, no orphans ─────────── */
+@media (max-width: 640px) {
+  /* The "FOR: ..." label inside pillar cards. Keep on its own line(s)
+     but at a slightly smaller size so two short audiences fit. */
+  .pillar-card > div:nth-of-type(3) {
+    font-size: 0.6rem !important;
+    line-height: 1.5 !important;
+    letter-spacing: 0.08em !important;
+  }
+}
+
+/* ── 5. LinkTrade "Coming soon" — add visible affordance ───────── */
+/* When a pillar card has aria-disabled, dim it slightly and pin a
+   "Coming soon" tag near the top so visitors don't think it's broken. */
+.pillar-card[aria-disabled] {
+  opacity: 0.78;
+  position: relative;
+}
+.pillar-card[aria-disabled]::after {
+  content: "Coming soon";
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(240,165,0,0.12);
+  border: 1px solid rgba(240,165,0,0.35);
+  color: var(--aeris-gold);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+
+/* Hide the redundant "Coming soon" text at the bottom of disabled cards
+   on mobile only (the badge above replaces it visually).
+   We target by looking for the last flex child that has fg-dim color. */
+@media (max-width: 640px) {
+  .pillar-card[aria-disabled] > div:last-child {
+    color: var(--fg-dim) !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* ── Bonus: Section padding tighter on mobile across the board ─── */
+@media (max-width: 640px) {
+  .aeris-section {
+    padding: 3rem 0 !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   TIER C: PARTNER SECTION REORDER
+   On mobile (<1024px): heading → form → bullets
+   On desktop (>=1024px): partner-grid is 2-col, intro+bullets in
+   left column above each other, form in right. The existing
+   `.partner-grid` selector (line ~470) already handles this.
+   ════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1023px) {
+  .partner-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  .partner-intro    { order: 1; }
+  .partner-grid > * { order: 2; }      /* KycForm */
+  .partner-bullets  { order: 3; }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: form goes right, intro + bullets stack in left column. */
+  .partner-grid {
+    grid-template-areas:
+      "intro   form"
+      "bullets form";
+    grid-template-columns: 1.1fr 1fr !important;
+    grid-template-rows: auto 1fr !important;
+    gap: 1.5rem 4rem !important;
+  }
+  .partner-intro   { grid-area: intro; }
+  .partner-bullets { grid-area: bullets; }
+  /* KycForm is the form area; we target it as the only direct child
+     that's neither .partner-intro nor .partner-bullets */
+  .partner-grid > form,
+  .partner-grid > .aeris-card { grid-area: form; }
+}

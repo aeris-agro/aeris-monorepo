@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  aeryion/dashboard:
+  aeris-website:
     dependencies:
       lucide-react:
         specifier: ^1.11.0
@@ -48,7 +48,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
 
-  coltiva/dashboard:
+  aeryion/dashboard:
     dependencies:
       lucide-react:
         specifier: ^1.11.0
@@ -81,6 +81,46 @@ importers:
       eslint-config-next:
         specifier: 16.2.3
         version: 16.2.3(@typescript-eslint/parser@8.58.1(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3))(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.2
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  coltiva/dashboard:
+    dependencies:
+      lucide-react:
+        specifier: ^1.11.0
+        version: 1.14.0(react@19.2.4)
+      next:
+        specifier: ^16.2.4
+        version: 16.2.4(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.2
+      '@types/node':
+        specifier: ^20
+        version: 20.19.39
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.4(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.2.3
+        version: 16.2.3(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.2

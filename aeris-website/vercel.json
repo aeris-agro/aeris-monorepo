@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "regions": ["fra1"],
+  "buildCommand": "pnpm --filter aeris-website build",
+  "outputDirectory": ".next",
+  "installCommand": "pnpm install --frozen-lockfile=false"
+}

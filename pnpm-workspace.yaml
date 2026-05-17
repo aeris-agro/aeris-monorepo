@@ -3,6 +3,7 @@ packages:
   - aeryion/dashboard
   - coltiva/website
   - coltiva/dashboard
+  - aeris-website
 
 onlyBuiltDependencies:
   - sharp

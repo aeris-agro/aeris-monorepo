@@ -18,7 +18,10 @@
     "lint:website": "pnpm --filter coltiva-website lint",
     "dev:dashboard-coltiva": "pnpm --filter coltiva-dashboard dev",
     "build:dashboard-coltiva": "pnpm --filter coltiva-dashboard build",
-    "lint:dashboard-coltiva": "pnpm --filter coltiva-dashboard lint"
+    "lint:dashboard-coltiva": "pnpm --filter coltiva-dashboard lint",
+    "dev:aeris-website": "pnpm --filter aeris-website dev",
+    "build:aeris-website": "pnpm --filter aeris-website build",
+    "lint:aeris-website": "pnpm --filter aeris-website lint"
   },
   "engines": {
     "node": ">=20.0.0",

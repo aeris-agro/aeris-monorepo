@@ -79,6 +79,7 @@ export default function LandingPage() {
         >
           <div className="aeris-container">
             <div
+              className="stats-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
@@ -204,35 +205,35 @@ export default function LandingPage() {
         <section id="partner" className="aeris-section">
           <div className="aeris-container">
             <div className="partner-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "start" }}>
-              <div>
+              <div className="partner-intro">
                 <div className="section-eyebrow">Partner with us</div>
                 <h2 className="aeris-h1">
                   Build Uganda&apos;s agricultural{" "}
                   <span className="green">nervous system</span> with us.
                 </h2>
-                <p className="aeris-body" style={{ fontSize: "var(--text-lg)", marginBottom: "2rem" }}>
+                <p className="aeris-body" style={{ fontSize: "var(--text-lg)", marginBottom: 0 }}>
                   Whether you&apos;re an investor, a government partner, a buyer of
                   Ugandan commodities, an input supplier, or a development
                   organisation working in Northern Uganda — we want to talk.
                 </p>
-
-                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.875rem", paddingLeft: 0 }}>
-                  {[
-                    "Investors looking at agritech in Sub-Saharan Africa",
-                    "Government and ministry partners across MAAIF, NEMA, UNMA",
-                    "Buyers and processors sourcing maize, sesame, sorghum, soya",
-                    "Input suppliers (seeds, fertiliser, finance) targeting smallholders",
-                    "Development partners working in Lango or expanding to Northern Uganda",
-                  ].map((line) => (
-                    <li key={line} style={{ display: "flex", alignItems: "flex-start", gap: "0.625rem", fontSize: "var(--text-md)", color: "var(--fg-muted)" }}>
-                      <ShieldCheck size={18} style={{ color: "var(--accent)", flexShrink: 0, marginTop: "0.2rem" }} />
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
 
               <KycForm />
+
+              <ul className="partner-bullets" style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.875rem", paddingLeft: 0, margin: 0 }}>
+                {[
+                  "Investors looking at agritech in Sub-Saharan Africa",
+                  "Government and ministry partners across MAAIF, NEMA, UNMA",
+                  "Buyers and processors sourcing maize, sesame, sorghum, soya",
+                  "Input suppliers (seeds, fertiliser, finance) targeting smallholders",
+                  "Development partners working in Lango or expanding to Northern Uganda",
+                ].map((line) => (
+                  <li key={line} style={{ display: "flex", alignItems: "flex-start", gap: "0.625rem", fontSize: "var(--text-md)", color: "var(--fg-muted)" }}>
+                    <ShieldCheck size={18} style={{ color: "var(--accent)", flexShrink: 0, marginTop: "0.2rem" }} />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>

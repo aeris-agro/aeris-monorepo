@@ -7,7 +7,7 @@ import { AuthGate } from "@/components/AuthGate";
 import { AppShell } from "@/components/AppShell";
 import { getUserProfile, setUserProfile } from "@/lib/session";
 import type { UserProfile } from "@/lib/session";
-import { api, ApiError } from "@/lib/api";
+import { ApiError } from "@/lib/api";
 
 const DISTRICTS = ["Lira", "Alebtong", "Dokolo", "Oyam", "Apac", "Kole"];
 
@@ -30,13 +30,15 @@ function ProfileBody() {
   const [feedback, setFeedback] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
 
   useEffect(() => {
-    const p = getUserProfile();
-    if (p) {
-      setProfile(p);
-      setFullName(p.full_name);
-      setDistrict(p.district ?? "");
-      setLanguage(p.preferred_language);
-    }
+    queueMicrotask(() => {
+      const p = getUserProfile();
+      if (p) {
+        setProfile(p);
+        setFullName(p.full_name);
+        setDistrict(p.district ?? "");
+        setLanguage(p.preferred_language);
+      }
+    });
   }, []);
 
   async function handleSave(e: React.FormEvent) {

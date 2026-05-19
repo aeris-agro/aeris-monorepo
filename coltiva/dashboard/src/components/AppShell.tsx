@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
@@ -26,12 +26,13 @@ const NAV = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router   = useRouter();
   const [open,    setOpen]    = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    setProfile(getUserProfile());
+    queueMicrotask(() => {
+      setProfile(getUserProfile());
+    });
   }, []);
 
   // Lock body scroll when drawer open
@@ -41,7 +42,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [open]);
 
   // Close drawer on route change
-  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    queueMicrotask(() => {
+      setOpen(false);
+    });
+  }, [pathname]);
 
   function handleLogout() {
     clearSession();

@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd ../.. && corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --frozen-lockfile",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --frozen-lockfile",
   "buildCommand": "cd ../.. && corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm --filter aeryion-dashboard build",
   "outputDirectory": ".next",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../../pnpm-workspace.yaml ../../package.json"

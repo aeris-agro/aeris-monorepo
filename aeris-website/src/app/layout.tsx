@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aerisagro.com";
@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     title:       "AERIS Agro — Intelligence. Connected.",
     description: "Agricultural intelligence infrastructure for Uganda.",
   },
+};
+
+export const viewport: Viewport = {
   themeColor: "#0d1a10",
 };
 

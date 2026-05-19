@@ -1,8 +1,8 @@
 {
   "framework": "nextjs",
   "regions": ["fra1"],
-  "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --frozen-lockfile",
-  "buildCommand": "cd .. && corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm --filter aeris-website build",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --no-frozen-lockfile",
+  "buildCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm build",
   "outputDirectory": ".next",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../pnpm-workspace.yaml ../package.json"
 }

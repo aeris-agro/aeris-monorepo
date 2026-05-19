@@ -23,7 +23,9 @@ function HomeBody() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    setProfile(getUserProfile());
+    queueMicrotask(() => {
+      setProfile(getUserProfile());
+    });
   }, []);
 
   const firstName = profile?.full_name.split(" ")[0] ?? "there";

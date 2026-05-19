@@ -22,7 +22,9 @@ function FarmBody() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    setProfile(getUserProfile());
+    queueMicrotask(() => {
+      setProfile(getUserProfile());
+    });
   }, []);
 
   if (!profile) return null;

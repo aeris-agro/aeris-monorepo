@@ -30,7 +30,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    setReady(true);
+    queueMicrotask(() => {
+      setReady(true);
+    });
   }, []);
 
   if (!ready) {

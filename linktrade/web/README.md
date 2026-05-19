@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LinkTrade Web
 
-## Getting Started
+Next.js web app for the LinkTrade market intelligence and trading surface.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 App Router, Turbopack, port 3000
+- React 19 + TypeScript
+- Tailwind v4
+
+## Routes
+
+| Route | Purpose |
+|---|---|
+| `/` | LinkTrade web UI |
+| `/api/health` | Frontend health check that also probes the configured backend |
+
+## Backend Proxy
+
+The app rewrites browser requests from `/api/v1/*` to the LinkTrade backend's `/api/v1/*` routes.
+
+```ts
+NEXT_PUBLIC_LINKTRADE_API_URL=http://localhost:8002
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If unset, the backend defaults to `http://localhost:8002`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Current implemented backend path:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+GET /api/v1/health
+```
 
-## Learn More
+The marketplace, order, payment, price, transport, quality, and dispute routers are currently scaffolded but do not expose behavior yet.
 
-To learn more about Next.js, take a look at the following resources:
+## Local Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+From the monorepo root:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+pnpm install
+pnpm --filter linktrade-web dev
+```
 
-## Deploy on Vercel
+Runs on `http://localhost:3000`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run the backend separately:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```sh
+cd linktrade/backend
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8002
+```
+
+## Production
+
+Deploy as a Vercel project with root directory `linktrade/web`.
+
+Required env var:
+
+- `NEXT_PUBLIC_LINKTRADE_API_URL` - deployed LinkTrade backend URL

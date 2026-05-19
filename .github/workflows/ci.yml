@@ -2,7 +2,7 @@ name: AERIS CI Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev/aeryion]
   pull_request:
     branches: [main]
 
@@ -13,11 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r lint
@@ -28,11 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r type-check
@@ -63,7 +59,7 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: ${{ matrix.path }}/requirements.txt
-      - run: pip install -r requirements.txt
+      - run: python -m pip install -r requirements.txt flake8 black mypy pytest
         working-directory: ${{ matrix.path }}
       - run: flake8 ${{ matrix.lint_paths }} --max-line-length=120 --exclude=__pycache__
         working-directory: ${{ matrix.path }}
@@ -96,7 +92,7 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: ${{ matrix.path }}/requirements.txt
-      - run: pip install -r requirements.txt
+      - run: python -m pip install -r requirements.txt flake8 black mypy pytest
         working-directory: ${{ matrix.path }}
       - run: mypy ${{ matrix.typecheck_path }} --ignore-missing-imports
         working-directory: ${{ matrix.path }}
@@ -123,14 +119,16 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: ${{ matrix.path }}/requirements.txt
-      - run: pip install -r requirements.txt
+      - run: python -m pip install -r requirements.txt pytest
         working-directory: ${{ matrix.path }}
       - name: Run tests when present
         working-directory: ${{ matrix.path }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}/${{ matrix.path }}
         run: |
           if [ -d tests ] && find tests -type f -name 'test_*.py' | grep -q .; then
             set +e
-            pytest tests/ -v --tb=short
+            python -m pytest tests/ -v --tb=short
             status=$?
             set -e
             if [ "$status" -eq 5 ]; then

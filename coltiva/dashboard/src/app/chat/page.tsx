@@ -10,7 +10,6 @@ interface Message {
   id:     string;
   role:   "user" | "assistant";
   text:   string;
-  ts:     number;
 }
 
 const STARTER_PROMPTS = [
@@ -52,7 +51,6 @@ function ChatBody() {
       id:   crypto.randomUUID(),
       role: "user",
       text: text.trim(),
-      ts:   Date.now(),
     };
     setMessages((m) => [...m, userMsg]);
     setInput("");
@@ -67,7 +65,6 @@ function ChatBody() {
           id:   crypto.randomUUID(),
           role: "assistant",
           text: STUB_RESPONSE,
-          ts:   Date.now(),
         },
       ]);
       setThinking(false);

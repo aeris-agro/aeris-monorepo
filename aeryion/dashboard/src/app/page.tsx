@@ -113,10 +113,6 @@ interface LiveData {
 }
 
 // ── Static fallback / supplemental data ──────────────────────────────────────
-const RAINFALL_30D = [
-  8, 12, 5, 3, 18, 22, 14, 8, 6, 10, 16, 20, 24, 18, 12, 8, 5, 3, 10, 14, 22,
-  28, 20, 16, 10, 8, 12, 18, 22, 16,
-];
 const TEMP_30D = [
   82, 85, 80, 88, 78, 90, 86, 84, 88, 85, 88, 90, 86, 84, 82, 85, 88, 86, 84,
   82, 85, 83, 80, 85, 84, 88, 86, 84, 82, 85,
@@ -1707,7 +1703,9 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    fetchAll();
+    queueMicrotask(() => {
+      void fetchAll();
+    });
     const id = setInterval(fetchAll, 5 * 60 * 1000);
     return () => clearInterval(id);
   }, [fetchAll]);

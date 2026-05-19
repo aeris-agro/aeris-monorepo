@@ -158,13 +158,15 @@ def get_soil_map():
             "nitrogen_pct": soil.get("nitrogen_pct"),
             "organic_carbon_pct": soil.get("organic_carbon_pct"),
             "texture_class": soil.get("texture_class"),
-            "soil_health": soil_health_score(
-                soil.get("ph_value"),
-                soil.get("nitrogen_pct"),
-                soil.get("organic_carbon_pct"),
-            )
-            if soil
-            else "NO_DATA",
+            "soil_health": (
+                soil_health_score(
+                    soil.get("ph_value"),
+                    soil.get("nitrogen_pct"),
+                    soil.get("organic_carbon_pct"),
+                )
+                if soil
+                else "NO_DATA"
+            ),
         }
         features.append(
             {

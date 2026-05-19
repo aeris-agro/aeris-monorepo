@@ -10,4 +10,3 @@ async def health_check():
         "service": "coltiva-api",
         "version": "0.1.0",
     }
-

@@ -37,8 +37,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r type-check
 
-  python-syntax:
-    name: ${{ matrix.name }} - Syntax
+  python-lint:
+    name: ${{ matrix.name }} - Lint
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -46,22 +46,59 @@ jobs:
         include:
           - name: Aeryion Backend
             path: aeryion/backend
-            check_paths: app workers
+            lint_paths: app workers tests
           - name: Coltiva Backend
             path: coltiva/backend
-            check_paths: app workers
+            lint_paths: app workers tests
           - name: LinkTrade Backend
             path: linktrade/backend
-            check_paths: app workers
+            lint_paths: app workers tests
           - name: Shared
             path: shared
-            check_paths: .
+            lint_paths: .
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m compileall -q ${{ matrix.check_paths }}
+          cache: pip
+          cache-dependency-path: ${{ matrix.path }}/requirements.txt
+      - run: pip install -r requirements.txt
+        working-directory: ${{ matrix.path }}
+      - run: flake8 ${{ matrix.lint_paths }} --max-line-length=120 --exclude=__pycache__
+        working-directory: ${{ matrix.path }}
+      - run: black --check ${{ matrix.lint_paths }}
+        working-directory: ${{ matrix.path }}
+
+  python-typecheck:
+    name: ${{ matrix.name }} - Type Check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Aeryion Backend
+            path: aeryion/backend
+            typecheck_path: app
+          - name: Coltiva Backend
+            path: coltiva/backend
+            typecheck_path: app
+          - name: LinkTrade Backend
+            path: linktrade/backend
+            typecheck_path: app
+          - name: Shared
+            path: shared
+            typecheck_path: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ${{ matrix.path }}/requirements.txt
+      - run: pip install -r requirements.txt
+        working-directory: ${{ matrix.path }}
+      - run: mypy ${{ matrix.typecheck_path }} --ignore-missing-imports
         working-directory: ${{ matrix.path }}
 
   python-test:
@@ -111,7 +148,8 @@ jobs:
     needs:
       - frontend-lint
       - frontend-typecheck
-      - python-syntax
+      - python-lint
+      - python-typecheck
       - python-test
     runs-on: ubuntu-latest
     steps:

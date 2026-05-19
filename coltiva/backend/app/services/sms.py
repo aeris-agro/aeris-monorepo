@@ -5,19 +5,20 @@ Africa's Talking SMS service.
 Sandbox docs: https://developers.africastalking.com/docs/sms/sending/sandbox
 Production:  https://developers.africastalking.com/docs/sms/sending/python
 """
+
 import httpx
 from typing import Optional
 
 from app.config import settings
 
-
 # Endpoint differs between sandbox and live
 SANDBOX_URL = "https://api.sandbox.africastalking.com/version1/messaging"
-LIVE_URL    = "https://api.africastalking.com/version1/messaging"
+LIVE_URL = "https://api.africastalking.com/version1/messaging"
 
 
 class SmsResult:
     """Lightweight result object returned by SmsClient.send()."""
+
     def __init__(
         self,
         success: bool,
@@ -26,19 +27,19 @@ class SmsResult:
         cost: Optional[str] = None,
         error: Optional[str] = None,
     ):
-        self.success         = success
+        self.success = success
         self.provider_msg_id = provider_msg_id
-        self.status          = status
-        self.cost            = cost
-        self.error           = error
+        self.status = status
+        self.cost = cost
+        self.error = error
 
 
 class SmsClient:
     def __init__(self):
         self.username = settings.AT_USERNAME
-        self.api_key  = settings.AT_API_KEY
-        self.sender   = settings.AT_SHORTCODE or None
-        self.url      = SANDBOX_URL if self.username == "sandbox" else LIVE_URL
+        self.api_key = settings.AT_API_KEY
+        self.sender = settings.AT_SHORTCODE or None
+        self.url = SANDBOX_URL if self.username == "sandbox" else LIVE_URL
 
     def is_configured(self) -> bool:
         return bool(self.username and self.api_key)
@@ -59,16 +60,16 @@ class SmsClient:
 
         payload = {
             "username": self.username,
-            "to":       phone,
-            "message":  message,
+            "to": phone,
+            "message": message,
         }
         if self.sender:
             payload["from"] = self.sender
 
         headers = {
-            "apiKey":       self.api_key,
+            "apiKey": self.api_key,
             "Content-Type": "application/x-www-form-urlencoded",
-            "Accept":       "application/json",
+            "Accept": "application/json",
         }
 
         try:
@@ -92,14 +93,14 @@ class SmsClient:
                 )
 
             rec = recipients[0]
-            ok  = rec.get("status") == "Success"
+            ok = rec.get("status") == "Success"
 
             return SmsResult(
-                success         = ok,
-                provider_msg_id = rec.get("messageId"),
-                status          = "sent" if ok else "failed",
-                cost            = rec.get("cost"),
-                error           = None if ok else rec.get("status"),
+                success=ok,
+                provider_msg_id=rec.get("messageId"),
+                status="sent" if ok else "failed",
+                cost=rec.get("cost"),
+                error=None if ok else rec.get("status"),
             )
 
         except (httpx.HTTPError, httpx.TimeoutException) as e:

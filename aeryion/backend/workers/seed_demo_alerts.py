@@ -15,7 +15,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
-ROOT_ENV  = Path(__file__).resolve().parents[3] / ".env"
+ROOT_ENV = Path(__file__).resolve().parents[3] / ".env"
 LOCAL_ENV = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(LOCAL_ENV if LOCAL_ENV.exists() else ROOT_ENV)
 
@@ -40,55 +40,60 @@ def get_sub_county_id(name: str) -> str | None:
 # ── Demo alert templates (resolved at runtime to actual sub_county UUIDs) ────
 DEMO_ALERTS = [
     {
-        "sub_county":     "Lira",
-        "alert_type":     "rainfall_heavy",
-        "severity":       "CRITICAL",
+        "sub_county": "Lira",
+        "alert_type": "rainfall_heavy",
+        "severity": "CRITICAL",
         "confidence_pct": 89.0,
-        "message_en":     "[DEMO] Heavy rainfall forecast in Lira. 52mm expected over next 48 hours. "
-                          "Risk of surface flooding in low-lying agricultural zones. Advise farmers "
-                          "to delay planting and harvest standing crops.",
-        "message_luo":    "[DEMO] Pii malo madongo bibino i Lira. Pii cibedo ki 52mm i kine awalu 48. "
-                          "Ber ka pwonyo poto pi cabbe ka kobongo myero kibedi.",
+        "message_en": "[DEMO] Heavy rainfall forecast in Lira. 52mm expected over next 48 hours. "
+        "Risk of surface flooding in low-lying agricultural zones. Advise farmers "
+        "to delay planting and harvest standing crops.",
+        "message_luo": "[DEMO] Pii malo madongo bibino i Lira. Pii cibedo ki 52mm i kine awalu 48. "
+        "Ber ka pwonyo poto pi cabbe ka kobongo myero kibedi.",
     },
     {
-        "sub_county":     "Dokolo",
-        "alert_type":     "pest_risk",
-        "severity":       "HIGH",
+        "sub_county": "Dokolo",
+        "alert_type": "pest_risk",
+        "severity": "HIGH",
         "confidence_pct": 78.0,
-        "message_en":     "[DEMO] Fall armyworm pressure in Dokolo. Humidity at 88% for 5+ days, "
-                          "temperature 24–31°C. Conditions favorable for emergence. Recommend "
-                          "scouting and early intervention.",
-        "message_luo":    "[DEMO] Akili tek twero bedo me pwonyo cabbe i Dokolo. Cwiny me iye otimo "
-                          "atir, lyeto onyo kalu. Ber ka kibedo madongo ki neno cabbe-ni.",
+        "message_en": "[DEMO] Fall armyworm pressure in Dokolo. Humidity at 88% for 5+ days, "
+        "temperature 24–31°C. Conditions favorable for emergence. Recommend "
+        "scouting and early intervention.",
+        "message_luo": "[DEMO] Akili tek twero bedo me pwonyo cabbe i Dokolo. Cwiny me iye otimo "
+        "atir, lyeto onyo kalu. Ber ka kibedo madongo ki neno cabbe-ni.",
     },
     {
-        "sub_county":     "Alebtong",
-        "alert_type":     "soil_moisture",
-        "severity":       "MEDIUM",
+        "sub_county": "Alebtong",
+        "alert_type": "soil_moisture",
+        "severity": "MEDIUM",
         "confidence_pct": 82.0,
-        "message_en":     "[DEMO] Soil moisture deficit in Alebtong. Currently 28% (below 45% optimal "
-                          "for maize). 3-day dry forecast. Consider irrigated plots or delay planting "
-                          "by 5–7 days.",
-        "message_luo":    "[DEMO] Pii i ngom orem i Alebtong. Tin gibedo 28%. Tii pi pii ki kony marom "
-                          "ka kobongo cabbe ki nino abic.",
+        "message_en": "[DEMO] Soil moisture deficit in Alebtong. Currently 28% (below 45% optimal "
+        "for maize). 3-day dry forecast. Consider irrigated plots or delay planting "
+        "by 5–7 days.",
+        "message_luo": "[DEMO] Pii i ngom orem i Alebtong. Tin gibedo 28%. Tii pi pii ki kony marom "
+        "ka kobongo cabbe ki nino abic.",
     },
     {
-        "sub_county":     "Lira",
-        "alert_type":     "planting_window",
-        "severity":       "LOW",
+        "sub_county": "Lira",
+        "alert_type": "planting_window",
+        "severity": "LOW",
         "confidence_pct": 91.0,
-        "message_en":     "[DEMO] Optimal planting window in Lira. Soil moisture at 65%, 5-day dry "
-                          "forecast. Conditions favorable for second planting season. Cooperative "
-                          "messaging recommended.",
-        "message_luo":    "[DEMO] Kare maber me pwonyo cabbe i Lira. Pii i ngom 65%, lyeto pwoyo "
-                          "obedo. Tii cabbe atir.",
+        "message_en": "[DEMO] Optimal planting window in Lira. Soil moisture at 65%, 5-day dry "
+        "forecast. Conditions favorable for second planting season. Cooperative "
+        "messaging recommended.",
+        "message_luo": "[DEMO] Kare maber me pwonyo cabbe i Lira. Pii i ngom 65%, lyeto pwoyo "
+        "obedo. Tii cabbe atir.",
     },
 ]
 
 
 def clear_demo_alerts() -> int:
     """Delete (or hard-deactivate) all weather_alerts where message_en contains [DEMO]."""
-    res = db("weather_alerts").select("id, message_en").like("message_en", "%[DEMO]%").execute()
+    res = (
+        db("weather_alerts")
+        .select("id, message_en")
+        .like("message_en", "%[DEMO]%")
+        .execute()
+    )
     if not res.data:
         return 0
     for row in res.data:
@@ -115,22 +120,26 @@ def seed_demo_alerts() -> int:
             .execute()
         )
         if dup.data:
-            print(f"  ⊙ skipped (already exists): {spec['alert_type']}/{spec['sub_county']}")
+            print(
+                f"  ⊙ skipped (already exists): {spec['alert_type']}/{spec['sub_county']}"
+            )
             continue
 
         record = {
-            "sub_county_id":  sc_id,
-            "alert_type":     spec["alert_type"],
-            "severity":       spec["severity"],
-            "forecast_date":  today,
+            "sub_county_id": sc_id,
+            "alert_type": spec["alert_type"],
+            "severity": spec["severity"],
+            "forecast_date": today,
             "confidence_pct": spec["confidence_pct"],
-            "message_en":     spec["message_en"],
-            "message_luo":    spec.get("message_luo"),
-            "active":         True,
+            "message_en": spec["message_en"],
+            "message_luo": spec.get("message_luo"),
+            "active": True,
         }
         try:
             db("weather_alerts").insert(record).execute()
-            print(f"  ✓ {spec['severity']:8} [{spec['alert_type']}] {spec['sub_county']}")
+            print(
+                f"  ✓ {spec['severity']:8} [{spec['alert_type']}] {spec['sub_county']}"
+            )
             inserted += 1
         except Exception as e:
             print(f"  ✗ insert failed: {str(e)[:120]}")

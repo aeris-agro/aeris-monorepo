@@ -32,7 +32,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
-ROOT_ENV  = Path(__file__).resolve().parents[3] / ".env"
+ROOT_ENV = Path(__file__).resolve().parents[3] / ".env"
 LOCAL_ENV = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(LOCAL_ENV if LOCAL_ENV.exists() else ROOT_ENV)
 
@@ -50,27 +50,29 @@ def db_shared(table: str):
 
 
 # ── Thresholds ───────────────────────────────────────────────────────────────
-DROUGHT_ANOMALY_PCT        = -30.0
-FLOOD_ANOMALY_PCT          =  50.0
-NDVI_STRESS_THRESHOLD      =  0.30
-NDVI_CRITICAL_THRESHOLD    =  0.15
-SOIL_PH_ACIDIC_THRESHOLD   =   5.5
-SOIL_PH_ALKALINE_THRESHOLD =   7.5
+DROUGHT_ANOMALY_PCT = -30.0
+FLOOD_ANOMALY_PCT = 50.0
+NDVI_STRESS_THRESHOLD = 0.30
+NDVI_CRITICAL_THRESHOLD = 0.15
+SOIL_PH_ACIDIC_THRESHOLD = 5.5
+SOIL_PH_ALKALINE_THRESHOLD = 7.5
 
 DUPLICATE_LOOKBACK_DAYS = 7
 
 
 def existing_active_alert(sub_county_id: str, alert_type: str, severity: str) -> bool:
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=DUPLICATE_LOOKBACK_DAYS)).isoformat()
+    cutoff = (
+        datetime.now(timezone.utc) - timedelta(days=DUPLICATE_LOOKBACK_DAYS)
+    ).isoformat()
     try:
         r = (
             db("weather_alerts")
             .select("id")
             .eq("sub_county_id", sub_county_id)
-            .eq("alert_type",    alert_type)
-            .eq("severity",      severity)
-            .eq("active",        True)
-            .gte("created_at",   cutoff)
+            .eq("alert_type", alert_type)
+            .eq("severity", severity)
+            .eq("active", True)
+            .gte("created_at", cutoff)
             .limit(1)
             .execute()
         )
@@ -81,23 +83,25 @@ def existing_active_alert(sub_county_id: str, alert_type: str, severity: str) ->
 
 def insert_alert(
     sub_county_id: str,
-    alert_type:    str,
-    severity:      str,
-    message_en:    str,
-    confidence:    float = 0.85,
+    alert_type: str,
+    severity: str,
+    message_en: str,
+    confidence: float = 0.85,
 ) -> bool:
     if existing_active_alert(sub_county_id, alert_type, severity):
-        print(f"    ⊙ skipped (duplicate active): {alert_type}/{severity}/{sub_county_id[:8]}...")
+        print(
+            f"    ⊙ skipped (duplicate active): {alert_type}/{severity}/{sub_county_id[:8]}..."
+        )
         return False
 
     record = {
-        "sub_county_id":  sub_county_id,
-        "alert_type":     alert_type,
-        "severity":       severity,
-        "forecast_date":  date.today().isoformat(),
+        "sub_county_id": sub_county_id,
+        "alert_type": alert_type,
+        "severity": severity,
+        "forecast_date": date.today().isoformat(),
         "confidence_pct": round(confidence * 100, 1),
-        "message_en":     message_en,
-        "active":         True,
+        "message_en": message_en,
+        "active": True,
     }
     try:
         db("weather_alerts").insert(record).execute()
@@ -109,7 +113,13 @@ def insert_alert(
 
 
 def get_sub_county_name(sub_county_id: str) -> str:
-    sc = db_shared("sub_counties").select("name").eq("id", sub_county_id).single().execute()
+    sc = (
+        db_shared("sub_counties")
+        .select("name")
+        .eq("id", sub_county_id)
+        .single()
+        .execute()
+    )
     return sc.data["name"] if sc.data else "Unknown"
 
 
@@ -137,7 +147,9 @@ def evaluate_rainfall_anomaly():
 
         if anomaly < DROUGHT_ANOMALY_PCT:
             ok = insert_alert(
-                sc_id, "drought", "CRITICAL",
+                sc_id,
+                "drought",
+                "CRITICAL",
                 f"Drought conditions detected in {sc_name}. 90-day rainfall anomaly of "
                 f"{anomaly:.1f}% below historical average. Crops likely water-stressed. "
                 f"Recommend irrigation interventions and delayed planting advisories.",
@@ -146,7 +158,9 @@ def evaluate_rainfall_anomaly():
             inserted += 1 if ok else 0
         elif anomaly > FLOOD_ANOMALY_PCT:
             ok = insert_alert(
-                sc_id, "flood_risk", "HIGH",
+                sc_id,
+                "flood_risk",
+                "HIGH",
                 f"Flood risk in {sc_name}. 90-day rainfall {anomaly:.1f}% above historical avg. "
                 f"Risk of waterlogging in low-lying agricultural zones. Advise drainage maintenance.",
                 confidence=0.85,
@@ -179,7 +193,9 @@ def evaluate_ndvi():
 
         if ndvi < NDVI_CRITICAL_THRESHOLD:
             ok = insert_alert(
-                sc_id, "vegetation_stress", "CRITICAL",
+                sc_id,
+                "vegetation_stress",
+                "CRITICAL",
                 f"Critical vegetation distress in {sc_name}. NDVI of {ndvi:.2f} indicates "
                 f"severely stressed or dying crops. Immediate field inspection recommended.",
                 confidence=0.92,
@@ -187,7 +203,9 @@ def evaluate_ndvi():
             inserted += 1 if ok else 0
         elif ndvi < NDVI_STRESS_THRESHOLD:
             ok = insert_alert(
-                sc_id, "vegetation_stress", "HIGH",
+                sc_id,
+                "vegetation_stress",
+                "HIGH",
                 f"Vegetation stress in {sc_name}. NDVI of {ndvi:.2f} below healthy threshold. "
                 f"Possible causes: water stress, pest damage, or nutrient deficiency. "
                 f"Recommend ground-truth scouting.",
@@ -220,7 +238,9 @@ def evaluate_soil_ph():
 
         if ph < SOIL_PH_ACIDIC_THRESHOLD:
             ok = insert_alert(
-                sc_id, "soil_acidity", "MEDIUM",
+                sc_id,
+                "soil_acidity",
+                "MEDIUM",
                 f"Acidic soil baseline in {sc_name}. iSDAsoil pH of {ph:.2f} below optimal "
                 f"5.5–7.5 range. Recommend agricultural lime application before next planting.",
                 confidence=0.95,
@@ -228,7 +248,9 @@ def evaluate_soil_ph():
             inserted += 1 if ok else 0
         elif ph > SOIL_PH_ALKALINE_THRESHOLD:
             ok = insert_alert(
-                sc_id, "soil_alkalinity", "MEDIUM",
+                sc_id,
+                "soil_alkalinity",
+                "MEDIUM",
                 f"Alkaline soil baseline in {sc_name}. iSDAsoil pH of {ph:.2f} above optimal. "
                 f"Recommend organic matter (compost, manure) to gradually lower pH.",
                 confidence=0.95,
@@ -247,9 +269,14 @@ if __name__ == "__main__":
     evaluate_ndvi()
     evaluate_soil_ph()
 
-    active = db("weather_alerts").select("severity", count="exact").eq("active", True).execute()
+    active = (
+        db("weather_alerts")
+        .select("severity", count="exact")
+        .eq("active", True)
+        .execute()
+    )
     by_sev = {}
-    for a in (active.data or []):
+    for a in active.data or []:
         by_sev[a["severity"]] = by_sev.get(a["severity"], 0) + 1
 
     print(f"\n── Summary ──")

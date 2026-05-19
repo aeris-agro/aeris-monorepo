@@ -29,18 +29,17 @@ from datetime import date, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
-ROOT_ENV  = Path(__file__).resolve().parents[3] / ".env"
+ROOT_ENV = Path(__file__).resolve().parents[3] / ".env"
 LOCAL_ENV = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(LOCAL_ENV if LOCAL_ENV.exists() else ROOT_ENV)
 
 import ee
 from supabase import create_client
 
-
 # ── Config ────────────────────────────────────────────────────────────────────
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
-GEE_PROJECT  = "aeryion"
+GEE_PROJECT = "aeryion"
 
 LANGO_DISTRICTS = ["Lira", "Alebtong", "Dokolo"]
 
@@ -81,17 +80,23 @@ print("── Step 2: Fetching OCHA geometries ──")
 OCHA_ADM2 = ee.FeatureCollection(
     "projects/sat-io/open-datasets/field-maps/edge-matched-humanitarian/adm2_polygons"
 )
-lango = OCHA_ADM2.filter(ee.Filter.And(
-    ee.Filter.eq("adm0_name", "Uganda"),
-    ee.Filter.inList("adm2_name", LANGO_DISTRICTS),
-))
+lango = OCHA_ADM2.filter(
+    ee.Filter.And(
+        ee.Filter.eq("adm0_name", "Uganda"),
+        ee.Filter.inList("adm2_name", LANGO_DISTRICTS),
+    )
+)
 matched = sorted(lango.aggregate_array("adm2_name").getInfo())
 print(f"  OCHA matched: {matched}")
-assert matched == sorted(LANGO_DISTRICTS), f"Expected {sorted(LANGO_DISTRICTS)}, got {matched}"
+assert matched == sorted(
+    LANGO_DISTRICTS
+), f"Expected {sorted(LANGO_DISTRICTS)}, got {matched}"
 
 # Build a list of (sub_county_name, ee.Geometry) to iterate
 features = lango.getInfo()["features"]
-geom_by_name = {feat["properties"]["adm2_name"]: ee.Geometry(feat["geometry"]) for feat in features}
+geom_by_name = {
+    feat["properties"]["adm2_name"]: ee.Geometry(feat["geometry"]) for feat in features
+}
 print(f"  Built geometry map for {len(geom_by_name)} districts\n")
 
 
@@ -100,16 +105,20 @@ chirps = ee.ImageCollection("UCSB-CHG/CHIRPS/DAILY")
 
 # CHIRPS daily lags real-time by ~30 days. Anchor on the most recent
 # available image rather than `today` so we always get usable data.
-latest_iso = ee.Date(
-    chirps.sort("system:time_start", False).first().get("system:time_start")
-).format("YYYY-MM-dd").getInfo()
-end_date   = date.fromisoformat(latest_iso)
+latest_iso = (
+    ee.Date(chirps.sort("system:time_start", False).first().get("system:time_start"))
+    .format("YYYY-MM-dd")
+    .getInfo()
+)
+end_date = date.fromisoformat(latest_iso)
 start_date = end_date - timedelta(days=days_arg - 1)  # inclusive on both ends
 
-print(f"── Step 3: Sampling CHIRPS daily {start_date} → {end_date} (CHIRPS latest = {latest_iso}) ──")
+print(
+    f"── Step 3: Sampling CHIRPS daily {start_date} → {end_date} (CHIRPS latest = {latest_iso}) ──"
+)
 
 total_inserts = 0
-errors        = 0
+errors = 0
 
 # Iterate per sub-county to keep the GEE call surface small
 for sc_name, sc_id in sc_rows.items():
@@ -121,8 +130,9 @@ for sc_name, sc_id in sc_rows.items():
     print(f"\n  {sc_name:12} ({sc_id[:8]}...)", flush=True)
 
     # Get a list of {date, mean_rainfall} for the date range, in one GEE call
-    daily_collection = chirps.filterDate(start_date.isoformat(), end_date.isoformat()) \
-                              .filterBounds(geom)
+    daily_collection = chirps.filterDate(
+        start_date.isoformat(), end_date.isoformat()
+    ).filterBounds(geom)
 
     # Map: each image → reduce to mean over the geometry, return (date, value)
     def per_image(img):
@@ -152,14 +162,16 @@ for sc_name, sc_id in sc_rows.items():
         rainfall_value = p.get("rainfall_mm")
         if rainfall_value is None:
             continue
-        records.append({
-            "sub_county_id":    sc_id,
-            "observation_date": p["obs_date"],
-            "period_days":      1,
-            "rainfall_mm":      round(float(rainfall_value), 3),
-            "drought_flag":     False,
-            "flood_flag":       False,
-        })
+        records.append(
+            {
+                "sub_county_id": sc_id,
+                "observation_date": p["obs_date"],
+                "period_days": 1,
+                "rainfall_mm": round(float(rainfall_value), 3),
+                "drought_flag": False,
+                "flood_flag": False,
+            }
+        )
 
     if not records:
         print(f"    no usable records, skipping")
@@ -184,11 +196,14 @@ print(f"  Total upserts: {total_inserts}")
 print(f"  Errors:        {errors}")
 
 # Verify
-verify = sb.schema("aeryion").table("rainfall_observations") \
-    .select("sub_county_id, observation_date, rainfall_mm", count="exact") \
-    .eq("period_days", 1) \
-    .gte("observation_date", start_date.isoformat()) \
+verify = (
+    sb.schema("aeryion")
+    .table("rainfall_observations")
+    .select("sub_county_id, observation_date, rainfall_mm", count="exact")
+    .eq("period_days", 1)
+    .gte("observation_date", start_date.isoformat())
     .execute()
+)
 
 print(f"\n  Daily rows in DB for {start_date}+ : {verify.count}")
 

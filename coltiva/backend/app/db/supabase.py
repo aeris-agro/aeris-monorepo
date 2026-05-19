@@ -1,5 +1,7 @@
 # FILE: coltiva/backend/app/db/supabase.py
 from functools import lru_cache
+from typing import Any
+
 from supabase import Client, create_client
 from app.config import settings
 
@@ -25,15 +27,13 @@ def resolve_sub_county(longitude: float, latitude: float) -> str | None:
     Falls back to nearest centroid via the coltiva.resolve_sub_county() RPC.
     """
     try:
-        result = (
-            get_supabase()
-            .schema("aeryion")
-            .rpc("resolve_sub_county", {"plot_lng": longitude, "plot_lat": latitude})
-            .execute()
-        )
-        return result.data if result.data else None
+        params: Any = {"plot_lng": longitude, "plot_lat": latitude}
+        result = get_supabase().schema("aeryion").rpc("resolve_sub_county", params).execute()
+        data: Any = result.data
+        return str(data) if data else None
     except Exception:
         return None
+
 
 def shared(table: str):
     """Shorthand — targets the shared schema (sub_counties, districts)."""

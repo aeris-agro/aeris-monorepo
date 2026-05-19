@@ -1,5 +1,3 @@
-# FILE: coltiva/backend/app/routers/farmers.py
-from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 
@@ -13,13 +11,7 @@ router = APIRouter()
 @router.get("/cooperatives", response_model=list[CooperativeResponse])
 def list_cooperatives():
     """List all active cooperatives (Coltiva customers)."""
-    res = (
-        coltiva("cooperatives")
-        .select("*")
-        .eq("is_active", True)
-        .order("name")
-        .execute()
-    )
+    res = coltiva("cooperatives").select("*").eq("is_active", True).order("name").execute()
     return res.data or []
 
 
@@ -43,12 +35,7 @@ def register_farmer(farmer: FarmerCreate):
     if not coop.data["is_active"]:
         raise HTTPException(status_code=403, detail="Cooperative is inactive")
 
-    current = (
-        coltiva("farmers")
-        .select("id", count="exact")
-        .eq("cooperative_id", farmer.cooperative_id)
-        .execute()
-    )
+    current = coltiva("farmers").select("id", count="exact").eq("cooperative_id", farmer.cooperative_id).execute()
     if (current.count or 0) >= coop.data["farmer_quota"]:
         raise HTTPException(
             status_code=403,
@@ -71,7 +58,7 @@ def register_farmer(farmer: FarmerCreate):
 @router.get("/farmers", response_model=list[FarmerResponse])
 def list_farmers(
     cooperative_id: Optional[str] = Query(None),
-    limit:          int           = Query(50, ge=1, le=500),
+    limit: int = Query(50, ge=1, le=500),
 ):
     """List farmers, optionally filtered by cooperative."""
     q = coltiva("farmers").select("*").eq("is_active", True).order("registered_at", desc=True).limit(limit)

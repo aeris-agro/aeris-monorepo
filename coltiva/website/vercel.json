@@ -1,7 +1,8 @@
 {
   "framework": "nextjs",
   "regions": ["fra1"],
-  "buildCommand": "pnpm --filter coltiva-website build",
+  "installCommand": "cd ../.. && corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm --filter coltiva-website build",
   "outputDirectory": ".next",
-  "installCommand": "pnpm install --frozen-lockfile=false"
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../../pnpm-workspace.yaml ../../package.json"
 }

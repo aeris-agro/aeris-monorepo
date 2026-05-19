@@ -1,4 +1,5 @@
 packages:
+  - aeris-website
   - linktrade/web
   - aeryion/dashboard
   - coltiva/website

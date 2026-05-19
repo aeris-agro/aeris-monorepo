@@ -103,3 +103,5 @@ aeris-venv/
 *.log
 .railway/
 .vercel/
+.vercel
+.env*.local

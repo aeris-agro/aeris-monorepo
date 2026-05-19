@@ -1,0 +1,499 @@
+@import "tailwindcss";
+
+/* ════════════════════════════════════════════════════════════════
+   AERIS Agro Corporate Site — Global Styles
+   Dark-first per the AERIS design system.
+   Tagline: "Intelligence. Connected."
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Brand */
+  --aeris-green:        #22803f;
+  --aeris-green-dark:   #1a6a32;
+  --aeris-green-bright: #2ecc71;
+  --aeris-gold:         #f0a500;
+  --aeris-red:          #e85d5d;
+
+  /* Surfaces */
+  --bg:           #0d1a10;
+  --bg-2:         #0a1a0d;
+  --bg-card:      rgba(255,255,255,0.04);
+  --bg-card-h:    rgba(255,255,255,0.07);
+  --bg-nav:       rgba(8,15,9,0.85);
+  --bg-footer:    #060e08;
+
+  --border:       rgba(255,255,255,0.08);
+  --border-card:  rgba(255,255,255,0.07);
+  --border-green: rgba(46,204,113,0.25);
+
+  --fg:           #ffffff;
+  --fg-muted:     rgba(255,255,255,0.65);
+  --fg-dim:       rgba(255,255,255,0.40);
+  --fg-nav:       rgba(255,255,255,0.65);
+
+  --tag-bg:       rgba(34,128,63,0.12);
+  --tag-border:   rgba(34,128,63,0.28);
+  --tag-color:    #2ecc71;
+
+  --accent:       var(--aeris-green-bright);
+  --accent-dim:   var(--aeris-green);
+
+  --font-primary: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-mono:    "Geist Mono", monospace;
+
+  --radius-card:  16px;
+  --radius-pill:  50px;
+  --radius-sm:    8px;
+  --radius-xs:    6px;
+  --radius-modal: 20px;
+
+  --transition: 0.3s ease;
+
+  --text-xs:   0.65rem;
+  --text-sm:   0.75rem;
+  --text-base: 0.875rem;
+  --text-md:   0.9375rem;
+  --text-lg:   1rem;
+  --text-xl:   1.125rem;
+  --text-2xl:  1.375rem;
+  --text-3xl:  1.625rem;
+  --text-4xl:  2rem;
+  --text-5xl:  2.75rem;
+  --text-hero: clamp(2.25rem, 5.5vw, 4rem);
+  --text-h1:   clamp(1.875rem, 3.8vw, 2.875rem);
+
+  --shadow-card:  0 2px 12px rgba(0,0,0,0.18);
+  --shadow-icon:  0 8px 32px rgba(34,128,63,0.45);
+  --shadow-glow:  0 0 60px rgba(46,204,113,0.15);
+
+  --nav-h: 68px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color:      var(--fg);
+  font-family:var(--font-primary);
+  font-size:  16px;
+  line-height:1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; transition: color var(--transition); }
+
+.aeris-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+@media (min-width: 768px) { .aeris-container { padding: 0 2rem; } }
+
+.aeris-section { padding: 4rem 0; }
+@media (min-width: 768px) { .aeris-section { padding: 6rem 0; } }
+
+/* ── Glass nav ───────────────────────────────────────────────── */
+.glass-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-nav);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border);
+  height: var(--nav-h);
+}
+
+.aeris-wordmark {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+}
+.aeris-wordmark > span { color: var(--aeris-green-bright); }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.aeris-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background: var(--aeris-green); color: #fff;
+  font-family: var(--font-primary); font-size: var(--text-md); font-weight: 600;
+  padding: 0.85rem 1.5rem; border-radius: var(--radius-pill); border: none;
+  cursor: pointer; min-height: 44px; text-decoration: none;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.aeris-btn-primary:hover:not(:disabled) {
+  background: var(--aeris-green-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-icon);
+}
+.aeris-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.aeris-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background: transparent; color: var(--fg);
+  font-family: var(--font-primary); font-size: var(--text-md); font-weight: 500;
+  padding: 0.8rem 1.5rem; border-radius: var(--radius-pill);
+  border: 1px solid var(--border); cursor: pointer; min-height: 44px; text-decoration: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+.aeris-btn-ghost:hover {
+  border-color: var(--border-green);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ── Card ──────────────────────────────────────────────────── */
+.aeris-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+.aeris-card:hover { background: var(--bg-card-h); border-color: var(--border-green); }
+
+/* ── Tag / Badge ───────────────────────────────────────────── */
+.aeris-tag {
+  display: inline-flex; align-items: center;
+  background: var(--tag-bg); border: 1px solid var(--tag-border);
+  color: var(--tag-color);
+  font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.35rem 0.875rem; border-radius: var(--radius-pill);
+}
+
+/* ── Inputs ────────────────────────────────────────────────── */
+.aeris-input, .aeris-select, .aeris-textarea {
+  width: 100%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--fg);
+  font-family: var(--font-primary); font-size: var(--text-md);
+  padding: 0.85rem 1rem;
+  transition: border-color var(--transition), background var(--transition);
+  min-height: 48px;
+}
+.aeris-textarea { min-height: 120px; resize: vertical; font-family: inherit; }
+.aeris-input:focus, .aeris-select:focus, .aeris-textarea:focus {
+  outline: none; border-color: var(--accent); background: var(--bg-card-h);
+}
+.aeris-input::placeholder, .aeris-textarea::placeholder { color: var(--fg-dim); }
+
+.aeris-label {
+  display: block; font-size: var(--text-sm); font-weight: 600;
+  color: var(--fg); margin-bottom: 0.5rem;
+}
+
+.aeris-hint { font-size: var(--text-sm); color: var(--fg-dim); margin-top: 0.375rem; }
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  padding: 5rem 0 5rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.hero-bg::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(900px 600px at 80% 10%, rgba(34,128,63,0.18), transparent 60%),
+    radial-gradient(700px 500px at 10% 90%, rgba(46,204,113,0.08), transparent 60%);
+}
+.hero-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(46,204,113,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,204,113,0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+}
+
+.hero-title {
+  font-size: var(--text-hero); font-weight: 800;
+  line-height: 1.05; letter-spacing: -0.025em; color: var(--fg);
+  margin-bottom: 1.5rem; max-width: 820px;
+}
+.hero-title .gold  { color: var(--aeris-gold); }
+.hero-title .green { color: var(--aeris-green-bright); }
+
+.hero-sub {
+  font-size: var(--text-xl); color: var(--fg-muted);
+  line-height: 1.65; max-width: 640px; margin-bottom: 2.5rem;
+}
+
+.aeris-h1 {
+  font-size: var(--text-h1); font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.022em; color: var(--fg);
+  margin: 0 0 1rem;
+}
+.aeris-h1 .gold  { color: var(--aeris-gold); }
+.aeris-h1 .green { color: var(--aeris-green-bright); }
+
+.aeris-h2 {
+  font-size: var(--text-2xl); font-weight: 700; color: var(--fg);
+  margin: 0 0 0.625rem; line-height: 1.25;
+}
+
+.aeris-body { font-size: var(--text-md); color: var(--fg-muted); line-height: 1.7; }
+
+/* ── Section eyebrow ───────────────────────────────────────── */
+.section-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.625rem;
+  font-size: var(--text-xs); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.875rem;
+}
+.section-eyebrow::before {
+  content: ""; width: 28px; height: 1.5px; background: var(--accent);
+}
+
+/* ── Pillar card ───────────────────────────────────────────── */
+.pillar-card {
+  position: relative; padding: 2rem;
+  display: flex; flex-direction: column; gap: 1rem;
+  height: 100%; overflow: hidden;
+}
+.pillar-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), transparent); opacity: 0.6;
+}
+.pillar-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: rgba(34,128,63,0.16);
+  border: 1px solid var(--border-green);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+}
+.pillar-name { font-size: var(--text-2xl); font-weight: 800; letter-spacing: -0.01em; }
+.pillar-role {
+  font-size: var(--text-xs); font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--fg-dim); margin-top: -0.5rem;
+}
+
+/* ── Stats strip ───────────────────────────────────────────── */
+.stat-num {
+  font-size: var(--text-4xl); font-weight: 800;
+  letter-spacing: -0.025em; color: var(--accent);
+  line-height: 1.1; margin-bottom: 0.4rem;
+}
+.stat-label {
+  font-size: var(--text-xs); font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+/* ── KYC form ──────────────────────────────────────────────── */
+.kyc-form {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.25rem;
+}
+@media (max-width: 640px) { .kyc-form { grid-template-columns: 1fr; } }
+.kyc-full { grid-column: 1 / -1; }
+
+/* ── Spinner ───────────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.aeris-spinner {
+  width: 1.25rem; height: 1.25rem;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+  50%      { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+}
+
+html { scroll-behavior: smooth; }
+
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus {
+  position: static; display: inline-block;
+  padding: 0.5rem 1rem; background: var(--accent); color: #0d1a10;
+  font-weight: 600; border-radius: var(--radius-sm);
+}
+
+/* ── Mobile nav drawer ─────────────────────────────────────── */
+.nav-drawer {
+  position: fixed; inset: var(--nav-h) 0 0 0;
+  background: var(--bg); z-index: 49;
+  padding: 2rem 1.5rem;
+  display: flex; flex-direction: column; gap: 1rem;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  overflow-y: auto;
+}
+.nav-drawer.is-open { transform: translateX(0); }
+
+@media (min-width: 768px) { .nav-mobile-only  { display: none !important; } }
+@media (max-width: 767px) { .nav-desktop-only { display: none !important; } }
+
+/* ── Partner section: 2-col on desktop ─────────────────────── */
+@media (min-width: 1024px) {
+  .partner-grid {
+    grid-template-columns: 1.1fr 1fr !important;
+    gap: 4rem !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MOBILE OPTIMISATION PASS — appended after launch
+   Targets fixes for screens ≤ 640px:
+   1. Stats strip → 2×2 grid
+   2. Hero vertical padding tighter
+   3. Closed-loop "01/02/03" badges more visible
+   4. Pillar audience row wraps cleanly
+   5. LinkTrade "Coming soon" gets a visible affordance
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Stats strip: 2×2 on mobile, not 4 single rows ──────────── */
+@media (max-width: 640px) {
+  /* Force 2x2 grid on the stats strip (was collapsing to 1 column at
+     360-400px because the original auto-fit minmax(180px, 1fr) rule
+     doesn't fit two columns at narrow widths). */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5rem 1rem !important;
+  }
+  .stat-num   { font-size: 1.625rem !important; }
+  .stat-label { font-size: 0.625rem !important; }
+}
+
+/* ── 2. Hero vertical padding tighter on mobile ────────────────── */
+@media (max-width: 640px) {
+  .hero {
+    padding: 2.5rem 0 3rem !important;
+  }
+  .hero-title {
+    margin-bottom: 1rem !important;
+    line-height: 1.08 !important;
+  }
+  .hero-sub {
+    font-size: 1rem !important;
+    margin-bottom: 1.75rem !important;
+    line-height: 1.55 !important;
+  }
+  /* Buttons stack on very small screens for full-tappable rows */
+  .hero > .aeris-container > div:last-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .hero > .aeris-container > div:last-child > a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Reduce the eyebrow pill's bottom margin so hero is more compact */
+@media (max-width: 640px) {
+  .hero .aeris-container > div:first-child {
+    margin-bottom: 1.25rem !important;
+  }
+}
+
+/* ── 3. Closed-loop "01/02/03" ghost numbers more visible ──────── */
+/* The position:absolute div with the giant number background.
+   Was rgba(46,204,113,0.07) — too dim on phone. Bump opacity and
+   shrink slightly so it reads as decoration, not damage. */
+@media (max-width: 640px) {
+  /* Target the closed-loop step cards (FlowStep component renders an
+     .aeris-card with a position:absolute child containing the digit). */
+  section#how-it-works .aeris-card > div[aria-hidden] {
+    font-size: 3rem !important;
+    color: rgba(46,204,113,0.16) !important;
+    top: 0.875rem !important;
+    right: 1rem !important;
+  }
+}
+
+/* ── 4. Pillar audience row breaks cleanly, no orphans ─────────── */
+@media (max-width: 640px) {
+  /* The "FOR: ..." label inside pillar cards. Keep on its own line(s)
+     but at a slightly smaller size so two short audiences fit. */
+  .pillar-card > div:nth-of-type(3) {
+    font-size: 0.6rem !important;
+    line-height: 1.5 !important;
+    letter-spacing: 0.08em !important;
+  }
+}
+
+/* ── 5. LinkTrade "Coming soon" — add visible affordance ───────── */
+/* When a pillar card has aria-disabled, dim it slightly and pin a
+   "Coming soon" tag near the top so visitors don't think it's broken. */
+.pillar-card[aria-disabled] {
+  opacity: 0.78;
+  position: relative;
+}
+.pillar-card[aria-disabled]::after {
+  content: "Coming soon";
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(240,165,0,0.12);
+  border: 1px solid rgba(240,165,0,0.35);
+  color: var(--aeris-gold);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+
+/* Hide the redundant "Coming soon" text at the bottom of disabled cards
+   on mobile only (the badge above replaces it visually).
+   We target by looking for the last flex child that has fg-dim color. */
+@media (max-width: 640px) {
+  .pillar-card[aria-disabled] > div:last-child {
+    color: var(--fg-dim) !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* ── Bonus: Section padding tighter on mobile across the board ─── */
+@media (max-width: 640px) {
+  .aeris-section {
+    padding: 3rem 0 !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   TIER C: PARTNER SECTION REORDER
+   On mobile (<1024px): heading → form → bullets
+   On desktop (>=1024px): partner-grid is 2-col, intro+bullets in
+   left column above each other, form in right. The existing
+   `.partner-grid` selector (line ~470) already handles this.
+   ════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1023px) {
+  .partner-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  .partner-intro    { order: 1; }
+  .partner-grid > * { order: 2; }      /* KycForm */
+  .partner-bullets  { order: 3; }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: form goes right, intro + bullets stack in left column. */
+  .partner-grid {
+    grid-template-areas:
+      "intro   form"
+      "bullets form";
+    grid-template-columns: 1.1fr 1fr !important;
+    grid-template-rows: auto 1fr !important;
+    gap: 1.5rem 4rem !important;
+  }
+  .partner-intro   { grid-area: intro; }
+  .partner-bullets { grid-area: bullets; }
+  /* KycForm is the form area; we target it as the only direct child
+     that's neither .partner-intro nor .partner-bullets */
+  .partner-grid > form,
+  .partner-grid > .aeris-card { grid-area: form; }
+}

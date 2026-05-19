@@ -5,6 +5,9 @@
   "description": "AERIS Group \u2014 Integrated Agricultural Intelligence Infrastructure",
   "packageManager": "pnpm@10.26.1",
   "scripts": {
+    "dev:aeris-website": "pnpm --filter aeris-website dev",
+    "build:aeris-website": "pnpm --filter aeris-website build",
+    "lint:aeris-website": "pnpm --filter aeris-website lint",
     "dev:linktrade": "pnpm --filter linktrade-web dev",
     "dev:dashboard": "pnpm --filter aeryion-dashboard dev",
     "build:linktrade": "pnpm --filter linktrade-web build",

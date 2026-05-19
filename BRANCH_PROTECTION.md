@@ -22,19 +22,21 @@ main
 - **Require status checks to pass before merging**
 - **Require branches to be up to date before merging**
 - Add these required status checks:
-  - `aeryion-lint`
-  - `aeryion-typecheck`
-  - `aeryion-test`
-  - `coltiva-lint`
-  - `coltiva-typecheck`
-  - `coltiva-test`
-  - `linktrade-backend-lint`
-  - `linktrade-backend-typecheck`
-  - `linktrade-backend-test`
-  - `linktrade-web-lint`
-  - `shared-lint`
-  - `shared-typecheck`
-  - `shared-test`
+  - `Frontend - Lint`
+  - `Frontend - Type Check`
+  - `Aeryion Backend - Lint`
+  - `Aeryion Backend - Type Check`
+  - `Aeryion Backend - Test`
+  - `Coltiva Backend - Lint`
+  - `Coltiva Backend - Type Check`
+  - `Coltiva Backend - Test`
+  - `LinkTrade Backend - Lint`
+  - `LinkTrade Backend - Type Check`
+  - `LinkTrade Backend - Test`
+  - `Shared - Lint`
+  - `Shared - Type Check`
+  - `Shared - Test`
+  - `CI / All Checks Passed`
 
 ### 3. Require Signed Commits
 
@@ -77,4 +79,3 @@ Create `.github/CODEOWNERS` in the repository:
 /linktrade/  @aeris-group/linktrade-team
 /shared/     @aeris-group/platform-team
 ```
-

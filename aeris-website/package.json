@@ -2,6 +2,7 @@
   "name": "aeris-website",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.26.1",
   "scripts": {
     "dev": "next dev --turbopack --port 3004",
     "build": "next build",
@@ -24,5 +25,9 @@
     "eslint-config-next": "16.2.3",
     "tailwindcss": "^4",
     "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": "22.x",
+    "pnpm": "10.26.1"
   }
 }

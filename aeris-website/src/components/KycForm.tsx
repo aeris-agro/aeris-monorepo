@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { Send, CheckCircle2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Send, CheckCircle2, Clock3, Route, LockKeyhole } from "lucide-react";
 
 const CATEGORIES = [
   { value: "farmer_cooperative",   label: "Farmer cooperative" },
   { value: "investor",             label: "Investor / VC" },
-  { value: "government_partner",   label: "Government partner" },
+  { value: "government_partner",   label: "Government or district team" },
   { value: "commodity_buyer",      label: "Commodity buyer / processor" },
   { value: "input_supplier",       label: "Input supplier (seeds, fertiliser)" },
   { value: "development_partner",  label: "Development partner / NGO" },
+] as const;
+
+const INTERESTS = [
+  { value: "investment",              label: "Investment" },
+  { value: "government_deployment",   label: "Public-sector program" },
+  { value: "commodity_sourcing",      label: "Commodity sourcing" },
+  { value: "cooperative_onboarding",  label: "Farmer or cooperative support" },
+  { value: "data_research",           label: "Research partnership" },
 ] as const;
 
 const COUNTRIES = [
@@ -25,16 +33,19 @@ interface FormState {
   district:     string;
   organisation: string;
   category:     string;
+  interest:     string;
   message:      string;
+  website:      string;
 }
 
 const EMPTY: FormState = {
   full_name: "", email: "", phone: "",
   country: "Uganda", district: "", organisation: "",
-  category: "", message: "",
+  category: "", interest: "", message: "", website: "",
 };
 
 export function KycForm() {
+  const formStartedAt = useMemo(() => Date.now(), []);
   const [form,  setForm]  = useState<FormState>(EMPTY);
   const [busy,  setBusy]  = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +55,13 @@ export function KycForm() {
     setForm((s) => ({ ...s, [key]: val }));
   }
 
+  useEffect(() => {
+    const interest = new URLSearchParams(window.location.search).get("interest");
+    if (interest && INTERESTS.some((i) => i.value === interest)) {
+      update("interest", interest);
+    }
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -52,13 +70,17 @@ export function KycForm() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return setError("Please enter a valid email address.");
     if (form.phone.trim().length < 5)                        return setError("Please enter your phone number.");
     if (!form.category)                                      return setError("Please select what best describes you.");
+    if (!form.interest)                                      return setError("Please select what you are interested in.");
 
     setBusy(true);
     try {
       const res = await fetch("/api/kyc/lead", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(form),
+        body:    JSON.stringify({
+          ...form,
+          form_started_at: formStartedAt,
+        }),
       });
       const data = (await res.json()) as { id?: string; detail?: string };
       if (!res.ok) throw new Error(data.detail ?? "Submission failed");
@@ -96,7 +118,35 @@ export function KycForm() {
 
   return (
     <form onSubmit={handleSubmit} className="aeris-card" style={{ padding: "2rem" }}>
+      <div className="kyc-next-steps" aria-label="What happens next">
+        <div className="kyc-next-step">
+          <Clock3 size={18} />
+          <span>Reviewed within 5 working days</span>
+        </div>
+        <div className="kyc-next-step">
+          <Route size={18} />
+          <span>Routed to the right AERIS lead</span>
+        </div>
+        <div className="kyc-next-step">
+          <LockKeyhole size={18} />
+          <span>No spam or third-party sharing</span>
+        </div>
+      </div>
+
       <div className="kyc-form">
+        <div className="kyc-honeypot" aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input
+            id="website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={form.website}
+            onChange={(e) => update("website", e.target.value)}
+          />
+        </div>
+
         <Field label="Full name" required input={
           <input
             type="text" required minLength={2} maxLength={120}
@@ -105,14 +155,25 @@ export function KycForm() {
           />
         } />
 
-        <Field label="What best describes you?" required input={
+        <Field label="Who are you?" required input={
           <select
             required value={form.category}
             onChange={(e) => update("category", e.target.value)}
             disabled={busy} className="aeris-select"
           >
-            <option value="">Select category</option>
+            <option value="">Select one</option>
             {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+          </select>
+        } />
+
+        <Field label="What do you want to discuss?" required input={
+          <select
+            required value={form.interest}
+            onChange={(e) => update("interest", e.target.value)}
+            disabled={busy} className="aeris-select"
+          >
+            <option value="">Select one</option>
+            {INTERESTS.map((i) => <option key={i.value} value={i.value}>{i.label}</option>)}
           </select>
         } />
 
@@ -167,7 +228,7 @@ export function KycForm() {
             <textarea
               value={form.message} onChange={(e) => update("message", e.target.value)}
               disabled={busy} className="aeris-textarea" rows={4}
-              placeholder="Tell us briefly what you're looking to do with AERIS — partnership, investment, procurement, research, anything."
+              placeholder="Tell us what you want to do, where you work, and who you hope to support or buy from."
             />
           } />
         </div>

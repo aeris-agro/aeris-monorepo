@@ -9,18 +9,24 @@ export const metadata: Metadata = {
     template: "%s · AERIS Agro",
   },
   description:
-    "Integrated agricultural intelligence infrastructure for Uganda. Three platforms — Aeryion, Coltiva, LinkTrade — closing the $445M intelligence gap for Lango farmers.",
+    "Integrated agricultural intelligence infrastructure for Uganda. Three platforms — Aeryion, Coltiva, LinkTrade — targeting agricultural risk intelligence for Lango farmers.",
   metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title:       "AERIS Agro — Intelligence. Connected.",
     description: "Agricultural intelligence infrastructure for Uganda's Lango sub-region.",
     type:        "website",
     siteName:    "AERIS Agro",
+    url:         "/",
+    images:      [{ url: "/images/aeris-og.png", width: 1200, height: 630, alt: "AERIS Agro product suite" }],
   },
   twitter: {
     card:        "summary_large_image",
     title:       "AERIS Agro — Intelligence. Connected.",
     description: "Agricultural intelligence infrastructure for Uganda.",
+    images:      ["/images/aeris-og.png"],
   },
 };
 
@@ -36,6 +42,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"

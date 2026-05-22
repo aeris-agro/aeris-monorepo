@@ -25,9 +25,10 @@ export default function PrivacyPage() {
         <section className="legal-card">
           <h2>Information we collect</h2>
           <p>
-            When you submit the partner form, we collect the details you provide:
-            name, email address, phone number, country, district or region,
-            organisation, partner category, partnership interest, and message.
+            When you submit the partner or question forms, we collect the
+            details you provide: name, email address, phone number, country,
+            district or region, organisation, partner category, partnership
+            interest, message, and question or comment.
           </p>
           <p>
             We also collect basic request metadata such as IP address and browser

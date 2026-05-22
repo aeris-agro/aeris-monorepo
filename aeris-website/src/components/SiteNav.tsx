@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
+  { href: "#choose-path",   label: "Choose path" },
   { href: "#platforms",     label: "What we offer" },
   { href: "#how-it-works",  label: "How it helps" },
   { href: "/faq",           label: "FAQ" },
-  { href: "#partner",       label: "Partner" },
+  { href: "/questions",     label: "Questions" },
 ];
 
 export function SiteNav() {
@@ -22,24 +23,18 @@ export function SiteNav() {
   return (
     <>
       <nav className="glass-nav">
-        <div
-          className="aeris-container"
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}
-        >
+        <div className="aeris-container nav-shell">
           <a href="#top" className="aeris-wordmark" aria-label="AERIS Agro home">
             AERI<span>S AGRO</span>
           </a>
 
-          <div className="nav-desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div className="nav-desktop-only nav-links">
             {NAV_LINKS.map((l) => (
               l.href.startsWith("/") ? (
                 <Link
                   key={l.href}
                   href={l.href}
-                  style={{
-                    color: "var(--fg-nav)", fontSize: "var(--text-md)", fontWeight: 500,
-                    padding: "0.5rem 0.875rem", borderRadius: "var(--radius-sm)",
-                  }}
+                  className="nav-link"
                 >
                   {l.label}
                 </Link>
@@ -47,17 +42,14 @@ export function SiteNav() {
                 <a
                   key={l.href}
                   href={l.href}
-                  style={{
-                    color: "var(--fg-nav)", fontSize: "var(--text-md)", fontWeight: 500,
-                    padding: "0.5rem 0.875rem", borderRadius: "var(--radius-sm)",
-                  }}
+                  className="nav-link"
                 >
                   {l.label}
                 </a>
               )
             ))}
-            <a href="#partner" className="aeris-btn-primary" style={{ marginLeft: "0.75rem" }}>
-              Get in touch
+            <a href="/partner" className="aeris-btn-primary nav-cta">
+              Partner
             </a>
           </div>
 
@@ -67,12 +59,6 @@ export function SiteNav() {
             aria-expanded={open}
             onClick={() => setOpen(!open)}
             className="nav-mobile-only"
-            style={{
-              background: "transparent", border: "1px solid var(--border)",
-              borderRadius: "var(--radius-sm)", width: "44px", height: "44px",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", color: "var(--fg)",
-            }}
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -80,15 +66,16 @@ export function SiteNav() {
       </nav>
 
       <div className={`nav-drawer ${open ? "is-open" : ""}`}>
+        <div className="nav-drawer-header">
+          <div className="section-eyebrow">Menu</div>
+          <p>Jump to the main sections or start a request.</p>
+        </div>
         {NAV_LINKS.map((l) => (
           l.href.startsWith("/") ? (
             <Link
               key={l.href} href={l.href}
               onClick={() => setOpen(false)}
-              style={{
-                color: "var(--fg)", fontSize: "var(--text-xl)", fontWeight: 600,
-                padding: "0.875rem 0", borderBottom: "1px solid var(--border)",
-              }}
+              className="nav-drawer-link"
             >
               {l.label}
             </Link>
@@ -96,21 +83,14 @@ export function SiteNav() {
             <a
               key={l.href} href={l.href}
               onClick={() => setOpen(false)}
-              style={{
-                color: "var(--fg)", fontSize: "var(--text-xl)", fontWeight: 600,
-                padding: "0.875rem 0", borderBottom: "1px solid var(--border)",
-              }}
+              className="nav-drawer-link"
             >
               {l.label}
             </a>
           )
         ))}
-        <a
-          href="#partner" onClick={() => setOpen(false)}
-          className="aeris-btn-primary"
-          style={{ marginTop: "1rem", width: "100%" }}
-        >
-          Get in touch
+        <a href="/partner" onClick={() => setOpen(false)} className="aeris-btn-primary nav-drawer-cta">
+          Partner
         </a>
       </div>
     </>

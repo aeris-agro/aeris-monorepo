@@ -9,14 +9,14 @@ export const metadata: Metadata = {
     template: "%s · AERIS Agro",
   },
   description:
-    "Integrated agricultural intelligence infrastructure for Uganda. Three platforms — Aeryion, Coltiva, LinkTrade — targeting agricultural risk intelligence for Lango farmers.",
+    "Agricultural intelligence for Uganda's farming economy. AERIS helps districts, farmer groups, and buyers see problems earlier and move crops with more confidence.",
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title:       "AERIS Agro — Intelligence. Connected.",
-    description: "Agricultural intelligence infrastructure for Uganda's Lango sub-region.",
+    description: "Agricultural intelligence for Uganda's farming economy.",
     type:        "website",
     siteName:    "AERIS Agro",
     url:         "/",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card:        "summary_large_image",
     title:       "AERIS Agro — Intelligence. Connected.",
-    description: "Agricultural intelligence infrastructure for Uganda.",
+    description: "Agricultural intelligence for Uganda's farming economy.",
     images:      ["/images/aeris-og.png"],
   },
 };

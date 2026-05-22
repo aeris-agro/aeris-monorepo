@@ -66,13 +66,6 @@ export function FaqQuestionForm() {
 
   return (
     <form className="faq-submit-card" onSubmit={handleSubmit}>
-      <div className="section-eyebrow">Ask a question</div>
-      <h2>Add a question or comment</h2>
-      <p>
-        If something is unclear, send it here. We use these notes to improve
-        the FAQ and follow up when needed.
-      </p>
-
       <div className="kyc-honeypot" aria-hidden="true">
         <label htmlFor="faq-website">Website</label>
         <input

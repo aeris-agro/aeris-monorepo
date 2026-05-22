@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FaqQuestionForm } from "@/components/FaqQuestionForm";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -26,7 +25,7 @@ const FAQS = [
   },
   {
     q: "How do partners engage?",
-    a: "Partners can start a conversation about farmer support, crop sourcing, investment, research, or local deployment through the partner form.",
+    a: "Partners can start a conversation about farmer support, crop sourcing, investment, research, or local deployment on the partner page.",
   },
   {
     q: "Can buyers and processors use AERIS?",
@@ -58,7 +57,12 @@ export default function FaqPage() {
           ))}
         </section>
 
-        <FaqQuestionForm />
+        <div className="faq-followup">
+          <p>Still have a question or comment?</p>
+          <Link href="/questions" className="aeris-btn-primary">
+            Go to the questions page
+          </Link>
+        </div>
       </div>
     </main>
   );

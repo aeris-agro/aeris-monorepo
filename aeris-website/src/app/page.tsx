@@ -1,4 +1,21 @@
-import { Satellite, Sprout, Store, ArrowRight, TrendingUp, Network, Radio, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import {
+  Satellite,
+  Sprout,
+  Store,
+  ArrowRight,
+  TrendingUp,
+  Network,
+  Radio,
+  ShieldCheck,
+  MapPinned,
+  Database,
+  UsersRound,
+  Landmark,
+  Handshake,
+  Smartphone,
+  WalletCards,
+} from "lucide-react";
 
 import { SiteNav } from "@/components/SiteNav";
 import { KycForm } from "@/components/KycForm";
@@ -17,119 +34,127 @@ export default function LandingPage() {
         {/* ═══ HERO ═══════════════════════════════════════════════ */}
         <section className="hero">
           <div className="hero-bg" aria-hidden />
-          <div className="aeris-container">
-            <div
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                background: "var(--tag-bg)", border: "1px solid var(--tag-border)",
-                borderRadius: "var(--radius-pill)",
-                padding: "0.4rem 1rem", marginBottom: "1.75rem",
-              }}
-            >
-              <span
-                style={{
-                  width: "7px", height: "7px", borderRadius: "50%",
-                  background: "var(--accent)", animation: "pulse 2s ease-in-out infinite",
-                }}
-              />
-              <span
-                style={{
-                  fontFamily: "var(--font-primary)",
-                  fontSize: "var(--text-xs)", fontWeight: 700,
-                  color: "var(--tag-color)",
-                  letterSpacing: "0.14em", textTransform: "uppercase",
-                }}
-              >
-                Now live · Lango sub-region, Uganda
-              </span>
-            </div>
+          <div className="aeris-container hero-grid">
+            <div className="hero-copy">
+              <h1 className="hero-title">
+                Agricultural intelligence for{" "}
+                <span className="gold">Uganda&apos;s farmers.</span>
+              </h1>
 
-            <h1 className="hero-title">
-              Agricultural intelligence{" "}
-              <span className="green">infrastructure.</span>
-              <br />
-              Built for <span className="gold">Uganda&apos;s farmers.</span>
-            </h1>
+              <p className="hero-sub">
+                We help farmers, local leaders, and buyers see problems early,
+                make better farm decisions, and move crops to market with more
+                confidence.
+              </p>
 
-            <p className="hero-sub">
-              AERIS Agro operates three connected platforms — environmental
-              intelligence, production intelligence, and market intelligence —
-              that together close the $445M agricultural intelligence gap in
-              Northern Uganda.
-            </p>
+              <div className="hero-actions">
+                <a href="#start-here" className="aeris-btn-primary">
+                  Start here <ArrowRight size={16} />
+                </a>
+                <a href="#partner" className="aeris-btn-ghost">
+                  Start a partnership
+                </a>
+              </div>
 
-            <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
-              <a href="#platforms" className="aeris-btn-primary">
-                Explore the platforms <ArrowRight size={16} />
-              </a>
-              <a href="#partner" className="aeris-btn-ghost">
-                Partner with us
-              </a>
             </div>
           </div>
         </section>
 
-        {/* ═══ STATS STRIP ════════════════════════════════════════ */}
-        <section
-          style={{
-            borderTop: "1px solid var(--border)",
-            borderBottom: "1px solid var(--border)",
-            padding: "3rem 0", background: "var(--bg-2)",
-          }}
-        >
+        {/* ═══ START HERE ════════════════════════════════════════ */}
+        <section id="start-here" className="start-band">
           <div className="aeris-container">
-            <div
-              className="stats-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                gap: "2rem",
-              }}
-            >
-              <Stat num="$445M" label="Intelligence gap" />
-              <Stat num="120K"  label="Lango farmers" />
-              <Stat num="800K"  label="Target by year 5" />
-              <Stat num="3"     label="Platforms · 1 ecosystem" />
+            <div className="start-grid">
+              <StartStep
+                n="01"
+                title="See problems early"
+                body="Spot weather, crop, and local risk before farmers lose time or money."
+              />
+              <StartStep
+                n="02"
+                title="Guide farmers clearly"
+                body="Turn information into simple advice that farmers can use on basic phones."
+              />
+              <StartStep
+                n="03"
+                title="Improve crop sales"
+                body="Help farmers and buyers work with clearer price, quality, and payment expectations."
+              />
             </div>
+          </div>
+        </section>
+
+        {/* ═══ WHO IT SERVES ══════════════════════════════════════ */}
+        <section id="who-it-serves" className="audience-band">
+          <div className="aeris-container">
+            <div className="section-intro section-intro-centered">
+              <div className="section-eyebrow">Who it serves</div>
+              <h2 className="aeris-h1">
+                Clear information for{" "}
+                <span className="green">the people moving agriculture forward.</span>
+              </h2>
+            </div>
+
+            <div className="audience-grid">
+              <AudienceCard
+                icon={<Landmark size={22} />}
+                title="Government and districts"
+                body="Know where farmers need support before drought, pests, or poor harvests become a wider problem."
+              />
+              <AudienceCard
+                icon={<Sprout size={22} />}
+                title="Farmers and cooperatives"
+                body="Get simple guidance on when to plant, what to watch for, and how to protect crops using any phone."
+              />
+              <AudienceCard
+                icon={<Handshake size={22} />}
+                title="Buyers and processors"
+                body="Find reliable produce, understand quality, and trade with more trust between both sides."
+              />
+            </div>
+            <SectionCta href="/?interest=cooperative_onboarding#partner" label="Support farmers with AERIS" />
           </div>
         </section>
 
         {/* ═══ THE THREE PLATFORMS ════════════════════════════════ */}
         <section id="platforms" className="aeris-section">
           <div className="aeris-container">
-            <div style={{ marginBottom: "3rem", maxWidth: "720px" }}>
-              <div className="section-eyebrow">The Three Pillars</div>
+            <div className="section-intro">
+              <div className="section-eyebrow">What we provide</div>
               <h2 className="aeris-h1">
-                One intelligence cycle.{" "}
-                <span className="green">Three platforms.</span>
+                Three simple tools.{" "}
+                <span className="green">One connected service.</span>
               </h2>
-              <p className="aeris-body" style={{ fontSize: "var(--text-lg)" }}>
-                We&apos;re not building three separate apps. We&apos;re building an
-                infrastructure that turns satellite data into farmer income.
+              <p className="aeris-body section-lede">
+                AERIS helps people understand what is happening, decide what to
+                do next, and connect harvests to better market opportunities.
               </p>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: "1.25rem",
-              }}
-            >
+            <div className="platform-grid">
               <PillarCard
                 icon={<Satellite size={24} />}
                 name="Aeryion"
-                role="Environmental Intelligence"
-                body="Processes Sentinel-2 imagery, CHIRPS rainfall, and IoT weather stations. Detects drought, flood, and pest pressure 7–14 days before damage. Powers government dashboards for MAAIF, NEMA, and district offices."
+                role="Early warning"
+                status="In pilot"
+                bullets={[
+                  "Shows where weather or crop risk is rising",
+                  "Helps districts and partners focus support",
+                  "Turns field conditions into clear alerts",
+                ]}
                 audience="Government · NGOs · Researchers"
                 href={AERYION_URL}
-                cta="See the dashboard"
+                cta="View Aeryion"
               />
               <PillarCard
                 icon={<Sprout size={24} />}
                 name="Coltiva"
-                role="Production Intelligence"
-                body="Reaches farmers via USSD on any phone. Personalised planting calendars, fertiliser plans in bottle caps and UGX, pest alerts in plain Luo. Free for farmers — AERIS covers the call cost."
+                role="Farmer guidance"
+                status="Live access"
+                bullets={[
+                  "Works on basic phones",
+                  "Gives planting, input, and pest guidance",
+                  "Uses plain language farmers can act on",
+                ]}
                 audience="Smallholder farmers · Village agents"
                 href={COLTIVA_URL}
                 cta="Visit Coltiva"
@@ -137,66 +162,175 @@ export default function LandingPage() {
               <PillarCard
                 icon={<Store size={24} />}
                 name="LinkTrade"
-                role="Market Intelligence"
-                body="Secure marketplace with mobile-money escrow (MTN MoMo, Airtel Money), quality grading, and real-time price intelligence. Eliminates middleman exploitation."
+                role="Market connection"
+                status="Coming soon"
+                bullets={[
+                  "Connects farmers with serious buyers",
+                  "Supports price and quality clarity",
+                  "Designed for safer payment steps",
+                ]}
                 audience="Farmers · Buyers · Processors"
                 href={LINKTRADE_URL}
                 cta="Coming soon"
                 disabled={!LINKTRADE_URL}
               />
             </div>
+            <SectionCta href="#how-it-works" label="See how it helps" />
           </div>
         </section>
 
         {/* ═══ HOW THEY CONNECT ═══════════════════════════════════ */}
-        <section id="how-it-works" className="aeris-section" style={{ background: "var(--bg-2)" }}>
+        <section id="how-it-works" className="aeris-section section-alt">
           <div className="aeris-container">
-            <div style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto 3rem" }}>
-              <div className="section-eyebrow" style={{ justifyContent: "center" }}>The Closed-Loop Cycle</div>
+            <div className="section-intro section-intro-centered">
+              <div className="section-eyebrow">How it helps</div>
               <h2 className="aeris-h1">
-                Detect. Decide. <span className="green">Deliver.</span>
+                See the risk. Share the advice.{" "}
+                <span className="green">Improve the sale.</span>
               </h2>
-              <p className="aeris-body" style={{ fontSize: "var(--text-lg)" }}>
-                Every threshold breach in Lango becomes a farmer&apos;s action plan
-                within hours — not seasons.
+              <p className="aeris-body section-lede">
+                AERIS turns scattered information into simple next steps for
+                the people who need to act.
               </p>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                gap: "1.5rem",
-              }}
-            >
+            <div className="flow-grid">
               <FlowStep n="01" icon={<Radio size={20} />}
-                title="Aeryion detects"
-                body="Satellite NDVI drops below threshold in Lira Central. Aeryion publishes a high-severity WEATHER_ALERT event with 91% confidence." />
+                title="AERIS spots a problem"
+                body="Weather, crop, or local field conditions show that farmers in an area may need attention." />
               <FlowStep n="02" icon={<Network size={20} />}
-                title="Coltiva decides"
-                body="Coltiva matches the alert to 1,200 maize farmers in affected sub-counties and generates personalised drought-mitigation advice per crop." />
+                title="Farmers get useful guidance"
+                body="Advice is turned into clear actions, such as when to plant, what to check, or how to respond." />
               <FlowStep n="03" icon={<TrendingUp size={20} />}
-                title="LinkTrade delivers"
-                body="At harvest, LinkTrade matches farmers to pre-agreed buyers with mobile-money escrow — locking in price before middlemen distort the market." />
+                title="Markets become easier to trust"
+                body="At harvest, better information helps farmers and buyers agree on quality, price, and payment." />
             </div>
 
-            <div
-              style={{
-                marginTop: "3rem",
-                padding: "1.75rem 2rem",
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-card)",
-                borderRadius: "var(--radius-card)",
-                maxWidth: "820px",
-                margin: "3rem auto 0",
-              }}
-            >
-              <p style={{ fontSize: "var(--text-lg)", color: "var(--fg-muted)", lineHeight: 1.7, margin: 0 }}>
-                <strong style={{ color: "var(--fg)" }}>
-                  The $445M in post-harvest losses is not a market failure.
+            <div className="insight-card">
+              <p>
+                <strong>
+                  Agricultural losses are not only a market failure.
                 </strong>{" "}
-                It is an intelligence failure. AERIS exists to close it.
+                They often happen because the right information reaches people
+                too late. AERIS is built to change that.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ TRUST PROOF ════════════════════════════════════════ */}
+        <section id="field" className="proof-band" aria-labelledby="proof-heading">
+          <div className="aeris-container">
+            <div className="proof-header">
+              <div>
+                <div className="section-eyebrow">Grounded in the field</div>
+                <h2 id="proof-heading" className="aeris-h1">
+                  Built for how farming and trade{" "}
+                  <span className="green">actually work.</span>
+                </h2>
+              </div>
+              <p className="aeris-body">
+                AERIS is shaped around basic phones, district operations,
+                changing weather, farmer groups, and crop buyers who need
+                dependable information before decisions are made.
+              </p>
+            </div>
+
+            <div className="proof-grid">
+              <ProofCard
+                icon={<MapPinned size={20} />}
+                label="Where we start"
+                title="Lango sub-region"
+                body="Our first focus is Lira, Alebtong, Dokolo, and nearby farming communities in Northern Uganda."
+              />
+              <ProofCard
+                icon={<Database size={20} />}
+                label="What we watch"
+                title="Weather, crops, and risk"
+                body="We track the conditions that affect planting, crop health, harvest timing, and local response."
+              />
+              <ProofCard
+                icon={<UsersRound size={20} />}
+                label="Who uses it"
+                title="Farmers, leaders, and buyers"
+                body="The same information flow helps people on the farm, in district offices, and in the market."
+              />
+              <ProofCard
+                icon={<ShieldCheck size={20} />}
+                label="How trade improves"
+                title="Safer crop transactions"
+                body="The market side is designed to support clearer prices, quality checks, and safer payment steps."
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ WHY NOW ════════════════════════════════════════════ */}
+        <section className="aeris-section why-now-section">
+          <div className="aeris-container">
+            <div className="section-intro">
+              <div className="section-eyebrow">Why now</div>
+              <h2 className="aeris-h1">
+                The right tools can now reach{" "}
+                <span className="green">the right people.</span>
+              </h2>
+            </div>
+
+            <div className="why-grid">
+              <ProofCard
+                icon={<Satellite size={20} />}
+                label="Earlier warning"
+                title="Problems can be seen sooner"
+                body="Weather and crop changes can be noticed before farmers lose a season of work."
+              />
+              <ProofCard
+                icon={<Smartphone size={20} />}
+                label="Wider reach"
+                title="Basic phones still work"
+                body="Farmers should not need a smartphone or data bundle to receive useful advice."
+              />
+              <ProofCard
+                icon={<WalletCards size={20} />}
+                label="Better trade"
+                title="Payments can be safer"
+                body="Mobile money makes it possible to build more trust into crop transactions."
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ CHOOSE PATH ════════════════════════════════════════ */}
+        <section id="choose-path" className="aeris-section choose-path-section">
+          <div className="aeris-container">
+            <div className="section-intro section-intro-centered">
+              <div className="section-eyebrow">Choose your path</div>
+              <h2 className="aeris-h1">
+                Tell us what you want{" "}
+                <span className="green">to build or solve.</span>
+              </h2>
+            </div>
+
+            <div className="path-grid">
+              <PathCard
+                title="I support farmers"
+                body="For cooperatives, NGOs, input providers, and farmer programs."
+                href="/?interest=cooperative_onboarding#partner"
+              />
+              <PathCard
+                title="I represent a district or public team"
+                body="For public-sector teams planning farmer support or local programs."
+                href="/?interest=government_deployment#partner"
+              />
+              <PathCard
+                title="I buy or process crops"
+                body="For buyers and processors looking for clearer supply and quality."
+                href="/?interest=commodity_sourcing#partner"
+              />
+              <PathCard
+                title="I want to invest or partner"
+                body="For investors, research teams, and strategic partners."
+                href="/?interest=investment#partner"
+              />
             </div>
           </div>
         </section>
@@ -204,32 +338,32 @@ export default function LandingPage() {
         {/* ═══ PARTNER + KYC FORM ═════════════════════════════════ */}
         <section id="partner" className="aeris-section">
           <div className="aeris-container">
-            <div className="partner-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "start" }}>
+            <div className="partner-grid">
               <div className="partner-intro">
                 <div className="section-eyebrow">Partner with us</div>
                 <h2 className="aeris-h1">
-                  Build Uganda&apos;s agricultural{" "}
-                  <span className="green">nervous system</span> with us.
+                  Tell us what you want{" "}
+                  <span className="green">to build or solve.</span>
                 </h2>
-                <p className="aeris-body" style={{ fontSize: "var(--text-lg)", marginBottom: 0 }}>
-                  Whether you&apos;re an investor, a government partner, a buyer of
-                  Ugandan commodities, an input supplier, or a development
-                  organisation working in Northern Uganda — we want to talk.
+                <p className="aeris-body partner-lede">
+                  We work with investors, public-sector teams, buyers,
+                  cooperatives, input suppliers, and development partners who
+                  want clearer agricultural information in Northern Uganda.
                 </p>
               </div>
 
               <KycForm />
 
-              <ul className="partner-bullets" style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.875rem", paddingLeft: 0, margin: 0 }}>
+              <ul className="partner-bullets">
                 {[
-                  "Investors looking at agritech in Sub-Saharan Africa",
-                  "Government and ministry partners across MAAIF, NEMA, UNMA",
-                  "Buyers and processors sourcing maize, sesame, sorghum, soya",
-                  "Input suppliers (seeds, fertiliser, finance) targeting smallholders",
-                  "Development partners working in Lango or expanding to Northern Uganda",
+                  "Support farmers before drought, pests, or poor timing reduce yields",
+                  "Plan local programs with clearer information from the field",
+                  "Source crops with better visibility on quality and supply",
+                  "Reach smallholder farmers with useful inputs, finance, or advice",
+                  "Start in Lango and expand across Northern Uganda",
                 ].map((line) => (
-                  <li key={line} style={{ display: "flex", alignItems: "flex-start", gap: "0.625rem", fontSize: "var(--text-md)", color: "var(--fg-muted)" }}>
-                    <ShieldCheck size={18} style={{ color: "var(--accent)", flexShrink: 0, marginTop: "0.2rem" }} />
+                  <li key={line}>
+                    <ShieldCheck size={18} />
                     <span>{line}</span>
                   </li>
                 ))}
@@ -240,23 +374,14 @@ export default function LandingPage() {
       </main>
 
       {/* ═══ FOOTER ═══════════════════════════════════════════════ */}
-      <footer style={{ background: "var(--bg-footer)", borderTop: "1px solid var(--border)", padding: "3rem 0 2rem" }}>
+      <footer className="site-footer">
         <div className="aeris-container">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "2rem",
-              marginBottom: "2rem",
-            }}
-          >
+          <div className="footer-grid">
             <div>
-              <div className="aeris-wordmark" style={{ marginBottom: "0.5rem" }}>
+              <div className="aeris-wordmark footer-wordmark">
                 AERI<span>S AGRO</span>
               </div>
-              <p style={{ fontSize: "var(--text-sm)", color: "var(--fg-dim)", margin: 0, letterSpacing: "0.04em" }}>
-                Intelligence. Connected.
-              </p>
+              <p className="footer-tagline">Intelligence. Connected.</p>
             </div>
 
             <FooterColumn
@@ -269,34 +394,29 @@ export default function LandingPage() {
             />
 
             <FooterColumn
-              title="Company"
+              title="Explore"
               links={[
-                { label: "Partner with us", href: "#partner" },
-                { label: "How it works",    href: "#how-it-works" },
+                { label: "Start here",       href: "#start-here" },
+                { label: "Who it serves",    href: "#who-it-serves" },
+                { label: "What we offer",    href: "#platforms" },
+                { label: "How it helps",     href: "#how-it-works" },
+                { label: "Grounded field",   href: "#field" },
+                { label: "Choose your path", href: "#choose-path" },
+                { label: "FAQ",              href: "/faq" },
+                { label: "Privacy Policy",   href: "/privacy" },
               ]}
             />
 
             <FooterColumn
               title="Contact"
               links={[
-                { label: "hello@aerisagro.com",        href: "mailto:hello@aerisagro.com" },
-                { label: "Kampala · Lira · Uganda",    href: "#" },
+                { label: "aerisagro@gmail.com",        href: "mailto:aerisagro@gmail.com" },
+                { label: "Kampala · Lira · Uganda" },
               ]}
             />
           </div>
 
-          <div
-            style={{
-              borderTop: "1px solid var(--border)",
-              paddingTop: "1.5rem",
-              display: "flex",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "1rem",
-              fontSize: "var(--text-sm)",
-              color: "var(--fg-dim)",
-            }}
-          >
+          <div className="footer-bottom">
             <span>&copy; {new Date().getFullYear()} AERIS Agro Ltd. Built in Uganda.</span>
             <span>Lango sub-region · Lira · Alebtong · Dokolo</span>
           </div>
@@ -308,20 +428,79 @@ export default function LandingPage() {
 
 /* ── Local components ───────────────────────────────────────── */
 
-function Stat({ num, label }: { num: string; label: string }) {
+function ProofCard({
+  icon, label, title, body,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  title: string;
+  body: string;
+}) {
   return (
-    <div style={{ textAlign: "center" }}>
-      <div className="stat-num">{num}</div>
-      <div className="stat-label">{label}</div>
+    <article className="proof-card">
+      <div className="proof-icon">{icon}</div>
+      <div>
+        <div className="proof-label">{label}</div>
+        <h3>{title}</h3>
+        <p>{body}</p>
+      </div>
+    </article>
+  );
+}
+
+function AudienceCard({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
+  return (
+    <article className="audience-card">
+      <div className="audience-icon">{icon}</div>
+      <h3>{title}</h3>
+      <p>{body}</p>
+    </article>
+  );
+}
+
+function StartStep({ n, title, body }: { n: string; title: string; body: string }) {
+  return (
+    <article className="start-step">
+      <div>{n}</div>
+      <h3>{title}</h3>
+      <p>{body}</p>
+    </article>
+  );
+}
+
+function SectionCta({ href, label }: { href: string; label: string }) {
+  const inner = (
+    <>
+      {label} <ArrowRight size={16} />
+    </>
+  );
+
+  return (
+    <div className="section-cta">
+      {href.startsWith("/") ? (
+        <Link href={href} className="aeris-btn-ghost">{inner}</Link>
+      ) : (
+        <a href={href} className="aeris-btn-ghost">{inner}</a>
+      )}
     </div>
   );
 }
 
+function PathCard({ title, body, href }: { title: string; body: string; href: string }) {
+  return (
+    <Link className="path-card" href={href}>
+      <h3>{title}</h3>
+      <p>{body}</p>
+      <span>Continue <ArrowRight size={16} /></span>
+    </Link>
+  );
+}
+
 function PillarCard({
-  icon, name, role, body, audience, href, cta, disabled,
+  icon, name, role, status, bullets, audience, href, cta, disabled,
 }: {
   icon: React.ReactNode; name: string; role: string;
-  body: string; audience: string;
+  status: string; bullets: string[]; audience: string;
   href: string; cta: string; disabled?: boolean;
 }) {
   const inner = (
@@ -331,24 +510,16 @@ function PillarCard({
         <div className="pillar-name">{name}</div>
         <div className="pillar-role">{role}</div>
       </div>
-      <p className="aeris-body" style={{ flex: 1 }}>{body}</p>
-      <div
-        style={{
-          fontSize: "var(--text-xs)", fontWeight: 700,
-          letterSpacing: "0.1em", textTransform: "uppercase",
-          color: "var(--fg-dim)",
-        }}
-      >
+      <div className="pillar-status">{status}</div>
+      <ul className="pillar-bullets">
+        {bullets.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <div className="pillar-audience">
         For: {audience}
       </div>
-      <div
-        style={{
-          display: "inline-flex", alignItems: "center", gap: "0.5rem",
-          color: disabled ? "var(--fg-dim)" : "var(--accent)",
-          fontWeight: 600, fontSize: "var(--text-md)",
-          marginTop: "0.5rem",
-        }}
-      >
+      <div className={`pillar-cta ${disabled ? "is-disabled" : ""}`}>
         {cta}
         {!disabled && <ArrowRight size={16} />}
       </div>
@@ -365,7 +536,6 @@ function PillarCard({
       target="_blank"
       rel="noopener noreferrer"
       className="aeris-card pillar-card"
-      style={{ textDecoration: "none" }}
     >
       {inner}
     </a>
@@ -374,66 +544,57 @@ function PillarCard({
 
 function FlowStep({ n, icon, title, body }: { n: string; icon: React.ReactNode; title: string; body: string; }) {
   return (
-    <div className="aeris-card" style={{ padding: "1.75rem", position: "relative" }}>
-      <div
-        style={{
-          position: "absolute", top: "1rem", right: "1.25rem",
-          fontSize: "3.5rem", fontWeight: 800,
-          color: "rgba(46,204,113,0.07)",
-          lineHeight: 1, letterSpacing: "-0.04em",
-        }}
-        aria-hidden
-      >
+    <div className="aeris-card flow-step">
+      <div className="flow-step-num" aria-hidden>
         {n}
       </div>
 
-      <div
-        style={{
-          width: "44px", height: "44px", borderRadius: "12px",
-          background: "rgba(34,128,63,0.16)",
-          border: "1px solid var(--border-green)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: "var(--accent)", marginBottom: "1rem",
-        }}
-      >
+      <div className="flow-step-icon">
         {icon}
       </div>
 
       <h3 className="aeris-h2">{title}</h3>
-      <p className="aeris-body" style={{ margin: 0 }}>{body}</p>
+      <p className="aeris-body flow-step-body">{body}</p>
     </div>
   );
 }
 
 function FooterColumn({ title, links }: {
   title: string;
-  links: Array<{ label: string; href: string; external?: boolean }>;
+  links: Array<{ label: string; href?: string; external?: boolean }>;
 }) {
   return (
-    <div>
-      <div
-        style={{
-          fontSize: "var(--text-xs)", fontWeight: 700,
-          letterSpacing: "0.14em", textTransform: "uppercase",
-          color: "var(--fg)", marginBottom: "1rem",
-        }}
-      >
+    <div className="footer-column">
+      <div className="footer-column-title">
         {title}
       </div>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+      <ul className="footer-column-list">
         {links.map((l) => (
           <li key={l.label}>
-            <a
-              href={l.href}
-              target={l.external ? "_blank" : undefined}
-              rel={l.external ? "noopener noreferrer" : undefined}
-              style={{ fontSize: "var(--text-sm)", color: "var(--fg-muted)" }}
-            >
-              {l.label}
-            </a>
+            <FooterLink {...l} />
           </li>
         ))}
       </ul>
     </div>
   );
+}
+
+function FooterLink({ label, href, external }: { label: string; href?: string; external?: boolean }) {
+  if (!href) {
+    return <span>{label}</span>;
+  }
+
+  if (external || href.startsWith("mailto:") || href.startsWith("#")) {
+    return (
+      <a
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+      >
+        {label}
+      </a>
+    );
+  }
+
+  return <Link href={href}>{label}</Link>;
 }

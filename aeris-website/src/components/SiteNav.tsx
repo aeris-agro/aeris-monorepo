@@ -1,12 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { href: "#platforms",     label: "Platforms" },
-  { href: "#how-it-works",  label: "How it works" },
-  { href: "#partner",       label: "Partner with us" },
+  { href: "#platforms",     label: "What we offer" },
+  { href: "#how-it-works",  label: "How it helps" },
+  { href: "/faq",           label: "FAQ" },
+  { href: "#partner",       label: "Partner" },
 ];
 
 export function SiteNav() {
@@ -30,16 +32,29 @@ export function SiteNav() {
 
           <div className="nav-desktop-only" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             {NAV_LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                style={{
-                  color: "var(--fg-nav)", fontSize: "var(--text-md)", fontWeight: 500,
-                  padding: "0.5rem 0.875rem", borderRadius: "var(--radius-sm)",
-                }}
-              >
-                {l.label}
-              </a>
+              l.href.startsWith("/") ? (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  style={{
+                    color: "var(--fg-nav)", fontSize: "var(--text-md)", fontWeight: 500,
+                    padding: "0.5rem 0.875rem", borderRadius: "var(--radius-sm)",
+                  }}
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  style={{
+                    color: "var(--fg-nav)", fontSize: "var(--text-md)", fontWeight: 500,
+                    padding: "0.5rem 0.875rem", borderRadius: "var(--radius-sm)",
+                  }}
+                >
+                  {l.label}
+                </a>
+              )
             ))}
             <a href="#partner" className="aeris-btn-primary" style={{ marginLeft: "0.75rem" }}>
               Get in touch
@@ -66,16 +81,29 @@ export function SiteNav() {
 
       <div className={`nav-drawer ${open ? "is-open" : ""}`}>
         {NAV_LINKS.map((l) => (
-          <a
-            key={l.href} href={l.href}
-            onClick={() => setOpen(false)}
-            style={{
-              color: "var(--fg)", fontSize: "var(--text-xl)", fontWeight: 600,
-              padding: "0.875rem 0", borderBottom: "1px solid var(--border)",
-            }}
-          >
-            {l.label}
-          </a>
+          l.href.startsWith("/") ? (
+            <Link
+              key={l.href} href={l.href}
+              onClick={() => setOpen(false)}
+              style={{
+                color: "var(--fg)", fontSize: "var(--text-xl)", fontWeight: 600,
+                padding: "0.875rem 0", borderBottom: "1px solid var(--border)",
+              }}
+            >
+              {l.label}
+            </Link>
+          ) : (
+            <a
+              key={l.href} href={l.href}
+              onClick={() => setOpen(false)}
+              style={{
+                color: "var(--fg)", fontSize: "var(--text-xl)", fontWeight: 600,
+                padding: "0.875rem 0", borderBottom: "1px solid var(--border)",
+              }}
+            >
+              {l.label}
+            </a>
+          )
         ))}
         <a
           href="#partner" onClick={() => setOpen(false)}

@@ -362,12 +362,12 @@ function OverviewScreen({
           <div className="panel">
             <div className="panel-header">
               <div>
-                <div className="panel-title">Lango Sub-region — Live Map</div>
+                <div className="panel-title">Lango Sub-region — Schematic Monitor</div>
                 <div className="panel-sub">
                   Lira · Oyam · Dokolo · Apach · Kole
                 </div>
               </div>
-              <span className="topbar-tag blue">Sentinel-2</span>
+              <span className="topbar-tag blue">Schematic view</span>
             </div>
             <div className="panel-body">
               <div className="map-area">
@@ -420,7 +420,7 @@ function OverviewScreen({
                   );
                 })}
                 <div className="map-label">
-                  Lango Sub-region · Northern Uganda
+                  Illustrative district positions · not a geographic map
                 </div>
               </div>
             </div>
@@ -694,9 +694,7 @@ function AlertsScreen({ data }: { data: LiveData }) {
 
 // ── Weather ───────────────────────────────────────────────────────────────────
 function WeatherScreen({ data }: { data: LiveData }) {
-  const totalMm = data.forecast
-    .reduce((s, d) => s + d.rainfall_mm, 0)
-    .toFixed(1);
+  const totalMm = data.forecast.length ? data.forecast.reduce((s, d) => s + d.rainfall_mm, 0).toFixed(1) : "—";
   const avgConf =
     data.forecast.length > 0
       ? (
@@ -802,7 +800,7 @@ function WeatherScreen({ data }: { data: LiveData }) {
               <div className="panel-title">Temperature Range — Monthly</div>
             </div>
             <div className="panel-body">
-              <ChartBars data={TEMP_30D} height={80} cls={() => "gold"} />
+              <div className="panel-sub">Temperature history is not currently available from the connected API.</div>
             </div>
           </div>
         </div>
@@ -823,34 +821,7 @@ function WeatherScreen({ data }: { data: LiveData }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { id: "L-01 Lira", r: "42mm", t: "28°C", on: true },
-                    { id: "O-02 Oyam", r: "58mm", t: "26°C", on: true },
-                    { id: "D-04 Dokolo", r: "31mm", t: "29°C", on: true },
-                    { id: "A-02 Apach", r: "—", t: "—", on: false },
-                    { id: "K-03 Kole", r: "24mm", t: "30°C", on: true },
-                  ].map((s) => (
-                    <tr key={s.id}>
-                      <td>
-                        <span
-                          className={
-                            s.on ? "station-online" : "station-offline"
-                          }
-                        />
-                        {s.id}
-                      </td>
-                      <td>{s.r}</td>
-                      <td>{s.t}</td>
-                      <td>
-                        <span
-                          className={`badge ${s.on ? "badge-green" : "badge-red"}`}
-                        >
-                          {s.on ? "Online" : "Offline"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                  <tr><td colSpan={4} style={{padding:"24px 10px",textAlign:"center",color:"var(--fg-dim)"}}>Station telemetry is not yet connected. No live readings to display.</td></tr>                </tbody>
               </table>
             </div>
           </div>
@@ -1090,7 +1061,7 @@ function SatelliteScreen({ data }: { data: LiveData }) {
           </div>
         </div>
         <div className="panel-body">
-          <ChartBars data={NDVI_30D} height={100} cls={() => "hi"} />
+          <div className="panel-sub">Historical NDVI series is not available from the connected API. Current observations appear above when the feed responds.</div>
         </div>
       </div>
     </>

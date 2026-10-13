@@ -299,9 +299,7 @@ function OverviewScreen({
           data.ndvi.reduce((s, d) => s + d.ndvi_mean, 0) / data.ndvi.length
         ).toFixed(2)
       : "—";
-  const totalRain = data.forecast
-    .reduce((s, d) => s + d.rainfall_mm, 0)
-    .toFixed(1);
+  const totalRain = data.forecast.length ? data.forecast.reduce((s, d) => s + d.rainfall_mm, 0).toFixed(1) : "—";
   const activeAlerts = data.alerts.filter((a) => a.active).length;
 
   const MAP_DISTRICTS = [
@@ -332,7 +330,7 @@ function OverviewScreen({
           <div className="metric-sub">
             {data.ndvi.length > 0
               ? `${data.ndvi[0].observed_date} · Sentinel-2`
-              : "Loading..."}
+              : "Data unavailable"}
           </div>
         </div>
         <div className="metric-card" onClick={() => go("alerts")}>
@@ -344,7 +342,7 @@ function OverviewScreen({
           </div>
           <div className="metric-sub">
             {activeAlerts === 0
-              ? "All districts nominal"
+              ? "No alerts returned · verify feed"
               : `${activeAlerts} require attention`}
           </div>
         </div>
@@ -353,9 +351,9 @@ function OverviewScreen({
             <Wifi size={11} /> IoT Stations
           </div>
           <div className="metric-value">
-            11<span>/14</span>
+            —
           </div>
-          <div className="metric-sub">3 stations offline</div>
+          <div className="metric-sub">Station telemetry unavailable</div>
         </div>
       </div>
 
@@ -489,9 +487,9 @@ function OverviewScreen({
                     <Sun size={14} color="#2ecc71" />
                   </div>
                   <div>
-                    <div className="alert-title">No active alerts</div>
+                    <div className="alert-title">No active alerts returned</div>
                     <div className="alert-meta">
-                      All districts nominal · Live data
+                      Verify feed before assuming all clear
                     </div>
                   </div>
                 </div>
@@ -550,7 +548,7 @@ function OverviewScreen({
                     padding: "20px 0",
                   }}
                 >
-                  Loading forecast...
+                  Forecast unavailable
                 </div>
               )}
               <div
@@ -1137,8 +1135,8 @@ function ForecastScreen({ data }: { data: LiveData }) {
         </div>
         <div className="metric-card">
           <div className="metric-label">Inputs</div>
-          <div className="metric-value blue">4</div>
-          <div className="metric-sub">CHIRPS · Sentinel · IoT · Landsat</div>
+          <div className="metric-value blue">—</div>
+          <div className="metric-sub">Source availability unverified</div>
         </div>
       </div>
 
@@ -1491,7 +1489,7 @@ function SoilScreen({ data }: { data: LiveData }) {
             <span>%</span>
           </div>
           <div className="metric-sub">
-            {Number(avgN) > 0.15 ? "Adequate" : "Below threshold"}
+            {avgN === "—" ? "No measurement" : Number(avgN) > 0.15 ? "Adequate" : "Below threshold"}
           </div>
         </div>
         <div className="metric-card">
@@ -1518,7 +1516,7 @@ function SoilScreen({ data }: { data: LiveData }) {
             className="panel-body"
             style={{ textAlign: "center", padding: 40, color: "var(--fg-dim)" }}
           >
-            Loading soil data...
+            Soil readings unavailable
           </div>
         </div>
       ) : (
@@ -1671,35 +1669,36 @@ export default function Page() {
     rainfallHistory: null,
   });
   const [lastUpdated, setLastUpdated] = useState("");
+  const [failedSources, setFailedSources] = useState<string[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const fetchAll = useCallback(async () => {
     setStatus("loading");
-    try {
-      const [ndviRes, forecastRes, alertsRes, soilRes, rainHistRes] = await Promise.all([
-        fetch("/api/v1/ndvi/latest"),
-        fetch("/api/v1/forecast/7day?sub_county=Lira"),
-        fetch("/api/v1/alerts/active"),
-        fetch("/api/v1/soil/latest"),
-        fetch("/api/v1/rainfall/history?days=30"),
-      ]);
-      const [ndvi, forecast, alerts, soil, rainfallHistory] = await Promise.all([
-        ndviRes.ok ? ndviRes.json() : [],
-        forecastRes.ok ? forecastRes.json() : [],
-        alertsRes.ok ? alertsRes.json() : [],
-        soilRes.ok ? soilRes.json() : [],
-        rainHistRes.ok ? rainHistRes.json() : null,
-      ]);
-      setData({ ndvi, forecast, alerts, soil, rainfallHistory });
-      setStatus("live");
-      setLastUpdated(
-        new Date().toLocaleTimeString("en-UG", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      );
-    } catch {
-      setStatus("offline");
-    }
+    const endpoints = [
+      ["NDVI", "/api/v1/ndvi/latest"],
+      ["Forecast", "/api/v1/forecast/7day?sub_county=Lira"],
+      ["Alerts", "/api/v1/alerts/active"],
+      ["Soil", "/api/v1/soil/latest"],
+      ["Rainfall history", "/api/v1/rainfall/history?days=30"],
+    ] as const;
+    const results = await Promise.all(endpoints.map(async ([name, url]) => {
+      try {
+        const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(15000) });
+        if (!response.ok) throw new Error(String(response.status));
+        return { name, ok: true, value: await response.json() };
+      } catch { return { name, ok: false, value: null }; }
+    }));
+    const unavailable = results.filter(r => !r.ok).map(r => r.name);
+    setFailedSources(unavailable);
+    setData({
+      ndvi: Array.isArray(results[0].value) ? results[0].value : [],
+      forecast: Array.isArray(results[1].value) ? results[1].value : [],
+      alerts: Array.isArray(results[2].value) ? results[2].value : [],
+      soil: Array.isArray(results[3].value) ? results[3].value : [],
+      rainfallHistory: results[4].value && !Array.isArray(results[4].value) ? results[4].value : null,
+    });
+    setStatus(unavailable.length === endpoints.length ? "offline" : "live");
+    setLastUpdated(new Date().toLocaleTimeString("en-UG", { hour: "2-digit", minute: "2-digit" }));
   }, []);
 
   useEffect(() => {
@@ -1711,6 +1710,18 @@ export default function Page() {
   }, [fetchAll]);
 
   const activeAlerts = data.alerts.filter((a) => a.active).length;
+  const exportReport = () => {
+    const rows: (string | number)[][] = [["Source", "Location", "Metric", "Value", "Date"]];
+    data.ndvi.forEach(d => rows.push(["NDVI", d.sub_county, "Mean", d.ndvi_mean, d.observed_date]));
+    data.forecast.forEach(d => rows.push(["Forecast", "Lira", "Rainfall (mm)", d.rainfall_mm, d.date]));
+    data.soil.forEach(d => rows.push(["Soil", d.sub_county, "pH", d.ph_value ?? "", d.observed_date]));
+    data.alerts.forEach(d => rows.push(["Alert", d.sub_county, d.alert_type, d.severity, d.created_at]));
+    const csv = rows.map(row => row.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url; link.download = "aeryion-environmental-report.csv"; link.click();
+    URL.revokeObjectURL(url);
+  };
   const apiDot = { live: "#2ecc71", offline: "#e85d5d", loading: "#f0a500" }[
     apiStatus
   ];
@@ -1743,7 +1754,7 @@ export default function Page() {
 
   return (
     <div className="app">
-      <aside className="sidebar">
+      <aside className={`sidebar${menuOpen ? " mobile-open" : ""}`}>
         <div className="sidebar-logo">
           <div className="logo-icon">
             <svg
@@ -1801,12 +1812,8 @@ export default function Page() {
           >
             <Brain size={16} /> LSTM Forecast
           </div>
-          <div className="nav-item">
-            <MapPin size={16} /> IoT Stations
-          </div>
-          <div className="nav-item">
-            <FileText size={16} /> Reports
-          </div>
+          <button className="nav-item" onClick={() => setScreen("weather")}><MapPin size={16} /> Station status</button>
+          <button className="nav-item" onClick={exportReport}><FileText size={16} /> Download report</button>
         </nav>
 
         <div className="sidebar-bottom">
@@ -1819,6 +1826,7 @@ export default function Page() {
 
       <main className="main">
         <div className="topbar">
+          <button className="btn-sm menu-toggle" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
           <div className="topbar-title">{SCREEN_TITLE[screen]}</div>
           <span
             className={`topbar-tag${STATUS_CLS[screen] ? ` ${STATUS_CLS[screen]}` : ""}`}
@@ -1848,8 +1856,8 @@ export default function Page() {
               {apiStatus === "live" ? "API" : apiStatus.toUpperCase()}
             </span>
           </div>
-          <button className="btn-sm">
-            <Download size={13} /> Export
+          <button className="btn-sm" onClick={exportReport}>
+            <Download size={13} /> Export CSV
           </button>
           <button className="btn-primary" onClick={fetchAll}>
             <RefreshCw size={13} /> Refresh
@@ -1857,6 +1865,8 @@ export default function Page() {
         </div>
 
         <div className="content">
+          <div className="dashboard-intro"><div><span className="eyebrow">AERIS AGRO · ENVIRONMENTAL INTELLIGENCE</span><h1>{SCREEN_TITLE[screen]}</h1><p>Satellite intelligence, translated for the farm. Monitoring weather, soil and crop signals across Lango.</p></div><div className="intro-aside">Northern Uganda<strong>Lango sub-region</strong><span>Observe · Model · Advise</span></div></div>
+          {failedSources.length > 0 && <div className="source-notice" role="status"><TriangleAlert size={17}/><span><strong>{apiStatus === "offline" ? "Data service unavailable" : "Partial data coverage"}.</strong> Unavailable: {failedSources.join(", ")}. Dashes mean unverified measurements.</span><button className="btn-sm" onClick={fetchAll}>Retry</button></div>}
           {screen === "overview" && (
             <OverviewScreen go={setScreen} data={data} />
           )}

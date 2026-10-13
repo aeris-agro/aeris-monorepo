@@ -775,3 +775,88 @@ body {
     background: var(--red);
     margin-right: 6px;
 }
+
+
+/* AERIS design language — restrained agricultural palette, accessible contrast */
+:root {
+  --green:#26744c; --green-dark:#194c35; --green-bright:#26744c;
+  --gold:#b9802c; --blue:#296c87; --red:#b94040; --amber:#99601d;
+  --bg:#f7f7f1; --bg-2:#eef2e9; --bg-card:#ffffff; --bg-card-h:#f5f8f2;
+  --border:#dae3da; --border-card:#e0e7df; --border-green:#6d9b79;
+  --fg:#19352a; --fg-muted:#52675c; --fg-dim:#62746a; --fg-nav:#52675c;
+  --tag-bg:#ecf5ec; --tag-border:#c9e1d0; --tag-color:#26744c;
+  --sidebar-bg:#ffffff; --blue-dim:#edf6f8;
+}
+body {background:var(--bg);color:var(--fg)}
+.sidebar {width:248px;box-shadow:3px 0 18px rgba(18,60,38,.025)}
+.main {margin-left:248px;min-width:0}
+.sidebar-logo {padding:25px 21px}
+.sidebar-nav {gap:5px}
+.nav-item {width:100%;text-align:left;border:0;background:none;font:inherit;min-height:42px}
+.nav-item:hover {background:#f0f5ef;color:var(--fg)}
+.nav-item.active {background:#eaf4eb;color:#1b683e}
+.district-chip {background:#edf5ef;border-color:#d0e1d3}
+.topbar {background:rgba(255,255,255,.94);height:70px;padding:0 30px;gap:12px}
+.content {padding:30px;max-width:1750px;width:100%;margin:0 auto}
+.dashboard-intro {display:flex;align-items:center;justify-content:space-between;gap:30px;margin:0 0 26px;padding:28px 32px;background:linear-gradient(120deg,#173e2d,#2a6548);color:#fff;border-radius:20px;overflow:hidden}
+.dashboard-intro .eyebrow {display:block;font-size:.7rem;font-weight:800;letter-spacing:.16em;color:#c2e0bd;margin-bottom:11px}
+.dashboard-intro h1 {font-size:clamp(1.5rem,2.7vw,2.5rem);font-weight:800;letter-spacing:-.035em;line-height:1.12;margin:0 0 12px}
+.dashboard-intro p {font-size:.88rem;line-height:1.6;color:#e2ece0;max-width:580px;margin:0}
+.intro-aside {flex:0 0 240px;border-left:1px solid #ffffff4a;padding-left:25px;font-size:.78rem;color:#d0e3d3;display:flex;flex-direction:column;gap:9px}
+.intro-aside strong {font-size:1.15rem;color:white}
+.intro-aside span {letter-spacing:.04em}
+.source-notice {display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:22px;border:1px solid #e7caa0;border-radius:12px;background:#fff8ea;color:#674723;font-size:.82rem;line-height:1.5}
+.source-notice > span {flex:1}
+.source-notice svg {flex-shrink:0}
+.metric-card,.panel {background:#fff;box-shadow:0 3px 14px rgba(22,57,36,.035)}
+.metric-card {min-height:132px;padding:21px;border-radius:16px}
+.metric-value {font-size:2rem}
+.metric-label {font-size:.7rem;letter-spacing:.075em}
+.metric-sub {margin-top:9px}
+.panel-header {padding:19px 21px 15px}
+.panel-title {font-size:.94rem}
+.panel-body {padding:19px 21px}
+.panel-sub,.metric-sub,.alert-meta {line-height:1.55}
+.two-col {grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);gap:18px}
+.metric-strip {gap:15px}
+.map-area {height:270px;background:#e9f1e3}
+.map-grid {background-image:linear-gradient(#26744c16 1px,transparent 1px),linear-gradient(90deg,#26744c16 1px,transparent 1px)}
+.map-label {color:#23653a}
+.map-dot {box-shadow:0 0 0 3px #fff}
+.forecast-day,.soil-card {background:#f7faf6}
+.chart-bar {background:#80ac87}
+.chart-bar.hi {background:#438b61}
+.chart-bar.lo {background:#dab77d}
+.chart-bar.gold {background:#ca9d55}
+.topbar-tag.blue {background:#edf6f8;color:#296c87}
+.badge-green {color:#26744c;background:#ecf5ec;border-color:#c9e1d0}
+.badge-red {color:#b94040;background:#fdf0ef;border-color:#f0cfce}
+.badge-amber {color:#99601d;background:#fff5e6;border-color:#eddbb9}
+.badge-blue {color:#296c87;background:#edf6f8;border-color:#c9e1eb}
+.badge-gray {background:#f3f5f2;color:#56685b;border-color:#dce3dc}
+.btn-sm {background:white;color:#315543;border-color:#cbdcd0}
+.btn-sm:hover {background:#eaf4eb;color:#1f5635}
+.btn-primary {background:#26744c}
+.btn-primary:hover {background:#194c35}
+.nav-item:focus-visible,.btn-sm:focus-visible,.btn-primary:focus-visible {outline:3px solid #bf8a35;outline-offset:3px}
+.menu-toggle {display:none}
+@media(max-width:1100px){.sidebar{width:205px}.main{margin-left:205px}.content{padding:22px}.topbar{padding:0 22px}.two-col{grid-template-columns:minmax(0,1fr)}.metric-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.intro-aside{flex-basis:180px}}
+@media(max-width:760px){
+ .sidebar{transform:translateX(-105%);width:min(290px,85vw);transition:transform .2s ease;box-shadow:10px 0 40px #19352a22}
+ .sidebar.mobile-open{transform:translateX(0)}
+ .main{margin-left:0}.menu-toggle{display:inline-flex}
+ .topbar{height:auto;min-height:66px;padding:10px 14px;flex-wrap:wrap;gap:8px}
+ .topbar-title{font-size:.9rem;min-width:120px}
+ .topbar-tag{max-width:100%;white-space:normal}
+ .content{padding:16px}
+ .dashboard-intro{padding:24px;display:block;border-radius:15px}
+ .dashboard-intro h1{font-size:1.8rem}
+ .intro-aside{margin-top:18px;padding:13px 0 0;border-left:0;border-top:1px solid #ffffff55}
+ .metric-strip,.three-col,.four-col,.soil-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .metric-card{min-height:105px;padding:14px}.metric-value{font-size:1.6rem}
+ .forecast-strip{overflow-x:auto;display:flex}.forecast-day{min-width:66px}
+ .source-notice{flex-wrap:wrap}
+ .station-table{display:block;overflow-x:auto}
+}
+@media(max-width:440px){.metric-strip,.three-col,.four-col{grid-template-columns:1fr!important}.topbar-title{flex-basis:calc(100% - 80px)}.topbar .btn-primary{padding:.5rem .7rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
